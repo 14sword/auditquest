@@ -39,8 +39,11 @@ h1,h2,h3,p{margin:0}
 .panel{border:3px solid var(--ink);box-shadow:6px 6px 0 var(--ink);border-radius:8px;background:var(--paper2)}
 
 /* ============ 顶栏 ============ */
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.5px;font-size:15px}
+.topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin:-2px 0 14px;padding:9px 0;flex-wrap:wrap;
+  background:linear-gradient(var(--paper) 78%,rgba(243,238,226,0))}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.5px;font-size:15px;
+  text-decoration:none;color:inherit;cursor:pointer;padding:0;text-align:left}
 .brand .sq{width:16px;height:16px;background:var(--red);border:2.5px solid var(--ink);border-radius:3px;transform:rotate(-8deg)}
 .brand small{font-weight:600;color:var(--ink2);font-size:11px;letter-spacing:1.6px}
 .tagline{font-size:11px;font-weight:700;letter-spacing:1.2px;border:2.5px solid var(--ink);border-radius:999px;padding:4px 12px;background:var(--amber)}
@@ -50,29 +53,40 @@ h1,h2,h3,p{margin:0}
 .seg > .cur{background:var(--ink);color:var(--paper2)}
 .seg > a:hover{background:var(--amber);color:var(--ink)}
 
-/* ============ 主菜单：漫画分格 ============ */
-.comic{display:grid;grid-template-columns:1fr 1.66fr 1fr;grid-template-rows:.94fr 1.16fr;gap:9px;min-height:598px;background:#fffdf7;border-radius:12px;padding:8px}
-.pane{position:relative;overflow:hidden;border:3px solid var(--ink);border-radius:10px;box-shadow:6px 6px 0 var(--ink);
+/* ============ 主菜单：漫画分格（斜切 + 黑缝） ============ */
+.comic{position:relative;display:grid;grid-template-columns:1fr 1.5fr 1fr;grid-template-rows:1fr 1fr;
+  gap:13px;min-height:608px;background:#fdfbf4;border-radius:5px;padding:7px}
+.pane{position:relative;overflow:hidden;border-radius:0;box-shadow:none;
+  filter:drop-shadow(2.4px 0 0 var(--ink)) drop-shadow(-2.4px 0 0 var(--ink))
+         drop-shadow(0 2.4px 0 var(--ink)) drop-shadow(0 -2.4px 0 var(--ink));
   cursor:pointer;padding:0;text-align:left;color:#fff;
   animation:paneIn .55s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc(var(--i,0)*85ms);
-  transition:transform .16s ease,box-shadow .16s ease}
-.pane:hover{transform:translate(-2px,-3px) rotate(-.6deg);box-shadow:8px 9px 0 var(--ink)}
-.pane:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+  transition:transform .16s ease,filter .16s ease}
+.comic > .pane:nth-child(1){clip-path:polygon(0 0,100% 0,100% 91%,0 100%)}
+.comic > .pane:nth-child(3){clip-path:polygon(0 0,100% 0,100% 100%,0 90%)}
+.comic > .pane:nth-child(4){clip-path:polygon(0 0,100% 11%,100% 100%,0 100%)}
+.comic > .pane:nth-child(5){clip-path:polygon(0 0,100% 0,100% 100%,0 90%)}
+.pane:hover{transform:translateY(-3px) scale(1.014);filter:saturate(1.08) brightness(1.04)}
+.pane:active{transform:translateY(0) scale(.995)}
 .pane::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:1;
-  background-image:radial-gradient(currentColor 1.8px,transparent 1.9px);background-size:10px 10px;opacity:.14}
+  background-image:radial-gradient(currentColor 3.1px,transparent 3.3px);background-size:16px 16px;opacity:.2}
 .pane.c-amber::before{background-image:repeating-linear-gradient(48deg,currentColor 0 2px,transparent 2px 10px);opacity:.1}
 .pane.c-purple::before{background-image:radial-gradient(circle at 50% 46%,transparent 0 13px,currentColor 13px 15px,transparent 15px 28px),radial-gradient(circle at 50% 46%,transparent 0 34px,currentColor 34px 36px,transparent 36px 49px);opacity:.13}
 .pane.c-green::before{background-image:linear-gradient(currentColor 1.7px,transparent 1.7px),linear-gradient(90deg,currentColor 1.7px,transparent 1.7px);background-size:17px 17px;opacity:.1}
-.pane::after{content:"";position:absolute;left:0;right:0;bottom:0;height:36%;z-index:1;pointer-events:none;
-  background:linear-gradient(to top,rgba(20,17,14,.3),transparent)}
-.ribbon{position:absolute;top:10px;left:10px;z-index:4;background:var(--paper2);color:var(--ink);
-  border:2.5px solid var(--ink);border-radius:6px;padding:4px 10px 5px;transform:rotate(-2deg);
-  box-shadow:2.5px 2.5px 0 rgba(20,17,14,.85)}
-.ribbon b{display:block;font-size:12.5px;font-weight:900;letter-spacing:.3px;line-height:1.15}
-.ribbon span{display:block;font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--ink2);margin-top:1px}
-.pane .art{position:absolute;inset:1% -11% -7%;z-index:2;display:grid;place-items:end center}
+.pane::after{content:"";position:absolute;left:0;right:0;bottom:0;height:22%;z-index:1;pointer-events:none;
+  background:linear-gradient(to top,rgba(20,17,14,.16),transparent)}
+.ribbon{position:absolute;top:9px;left:9px;z-index:4;background:#fffdf7;color:var(--ink);
+  border:2px solid #c23520;border-radius:3px;padding:3px 8px 4px;transform:rotate(-1.6deg);
+  box-shadow:2px 2px 0 rgba(20,17,14,.5)}
+.ribbon b{display:block;font-size:10px;font-weight:900;letter-spacing:.6px;line-height:1.1;color:#b8321f}
+.ribbon span{display:block;font-size:8px;font-weight:700;letter-spacing:.5px;color:#7d746a;margin-top:1px}
+.pane .art{position:absolute;inset:-9% -16% -1%;z-index:2;display:grid;place-items:end center}
 .pane .art svg{width:100%;height:100%;display:block;
-  filter:drop-shadow(0 6px 0 rgba(21,18,15,.22));
+  filter:drop-shadow(2px 0 0 #fffdf7) drop-shadow(-2px 0 0 #fffdf7)
+         drop-shadow(0 2px 0 #fffdf7) drop-shadow(0 -2px 0 #fffdf7)
+         drop-shadow(1.5px 1.5px 0 #fffdf7) drop-shadow(-1.5px 1.5px 0 #fffdf7)
+         drop-shadow(1.5px -1.5px 0 #fffdf7) drop-shadow(-1.5px -1.5px 0 #fffdf7)
+         drop-shadow(0 7px 0 rgba(21,18,15,.22));
   animation:floaty 6.5s ease-in-out infinite;animation-delay:calc(var(--i,0)*-1.2s)}
 .c-blue{background:var(--blue)}
 .c-amber{background:var(--amber);color:var(--ink)}
@@ -82,53 +96,55 @@ h1,h2,h3,p{margin:0}
 .c-teal{background:var(--teal)}
 
 .hero{grid-column:2;grid-row:1 / 3;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:26px 22px 22px;position:relative;overflow:hidden;
-  border:3px solid var(--ink);border-radius:10px;box-shadow:7px 7px 0 var(--ink);
+  text-align:center;padding:52px 20px 20px;position:relative;overflow:hidden;
+  clip-path:polygon(0 1.3%,100% 0,100% 98.7%,0 100%);justify-content:flex-start;
   background:
-    linear-gradient(to bottom, rgba(250,246,236,0) 0 37%, #faf6ec 50%, #faf6ec 100%),
-    repeating-conic-gradient(from -7deg at 50% 26%, #e0402b 0deg 6.4deg, #f2b23e 6.4deg 12.8deg);
+    linear-gradient(to bottom, rgba(250,246,236,0) 0 46%, rgba(250,246,236,.96) 64%, #faf6ec 76%, #faf6ec 100%),
+    repeating-conic-gradient(from -8deg at 50% 27%, #d93a26 0deg 6.1deg, #f4b32f 6.1deg 12.2deg);
+  filter:drop-shadow(2.4px 0 0 var(--ink)) drop-shadow(-2.4px 0 0 var(--ink))
+          drop-shadow(0 2.4px 0 var(--ink)) drop-shadow(0 -2.4px 0 var(--ink));
   animation:paneIn .5s ease both}
 .hero::after{content:"";position:absolute;inset:0;z-index:0;
-  background:radial-gradient(ellipse 54% 27% at 50% 29%, rgba(250,246,236,.9) 0 50%,
-    rgba(250,246,236,.42) 74%, rgba(250,246,236,0) 100%)}
+  background:radial-gradient(ellipse 62% 27% at 50% 38%, rgba(250,246,236,.86) 0 38%,
+    rgba(250,246,236,.3) 70%, rgba(250,246,236,0) 92%)}
 .hero > *{position:relative;z-index:1}
-.hero .kicker{display:inline-block;font-size:10px;font-weight:900;letter-spacing:3px;color:var(--red);
-  border:2.5px solid var(--red);border-radius:4px;padding:3px 10px;background:#fffdf7;
-  transform:rotate(-1.6deg);animation:charIn .5s ease both;animation-delay:.06s}
-.hero .ttl{font-size:clamp(44px,6.5vw,78px);font-weight:900;letter-spacing:4px;line-height:1;margin:12px 0 9px;
-  font-family:var(--disp);color:#fffdf7;
+.hero .kicker{font-size:11px;font-weight:900;letter-spacing:3px;color:#8c1f10;text-indent:3px;
+  animation:charIn .5s ease both;animation-delay:.06s}
+.hero .ttl{font-size:clamp(46px,6.4vw,82px);font-weight:900;letter-spacing:1px;line-height:1.04;margin:11px 0 5px;
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Heiti SC",system-ui,sans-serif;
+  color:#fffdf7;transform:rotate(-1.3deg);white-space:nowrap;
   text-shadow:
-    3px 0 0 var(--ink),-3px 0 0 var(--ink),0 3px 0 var(--ink),0 -3px 0 var(--ink),
-    2px 2px 0 var(--ink),-2px 2px 0 var(--ink),2px -2px 0 var(--ink),-2px -2px 0 var(--ink),
-    0 7px 0 rgba(20,17,14,.26)}
+    2px 0 0 #931f11,-2px 0 0 #931f11,0 2px 0 #931f11,0 -2px 0 #931f11,
+    1.6px 1.6px 0 #931f11,-1.6px 1.6px 0 #931f11,1.6px -1.6px 0 #931f11,-1.6px -1.6px 0 #931f11,
+    0 7px 16px rgba(96,16,6,.5)}
 .hero .ttl span{display:inline-block;
   animation:charIn .5s cubic-bezier(.2,.9,.3,1.55) both;animation-delay:calc(.12s + var(--d)*.07s)}
 .hero .en{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:6px;color:var(--paper2);
-  background:var(--ink);padding:3px 11px 3px 16px;border-radius:3px;transform:rotate(-.8deg);margin-bottom:14px;
+  background:var(--ink);padding:3px 11px 3px 16px;border-radius:3px;transform:rotate(-.8deg);margin-bottom:13px;
   animation:charIn .5s ease both;animation-delay:.4s}
-.hero .sub{font-size:12.5px;color:var(--ink2);max-width:352px;margin:0 auto 15px;line-height:1.8;
-  animation:charIn .5s ease both;animation-delay:.46s}
-.hero .btn.main{padding:15px 50px;font-size:16.5px;letter-spacing:3.5px;border-radius:999px;
-  background:linear-gradient(#f6c94f,#e7a72c);
-  box-shadow:5px 5px 0 var(--ink),0 0 0 5px rgba(250,246,236,.72);
+.hero .sub{font-size:11.5px;font-weight:800;letter-spacing:.8px;color:#6f1a0d;max-width:336px;margin:0 auto 20px;
+  line-height:1.6;animation:charIn .5s ease both;animation-delay:.46s}
+.hero .btn.main{padding:13px 46px;font-size:15.5px;letter-spacing:3px;border:2px solid #b06c14;border-radius:999px;
+  background:linear-gradient(#fbc94a,#eea72b);color:#4a2a06;
+  box-shadow:0 4px 0 #b06c14,0 9px 20px rgba(120,22,12,.35);
   animation:charIn .5s cubic-bezier(.2,.9,.3,1.4) both;animation-delay:.52s}
-.hbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:338px;max-width:100%;margin-top:9px;
+.hbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:330px;max-width:100%;margin-top:10px;
   animation:charIn .5s ease both;animation-delay:.6s}
-.hbtns .btn{width:100%;padding:9px 2px;font-size:11.5px;letter-spacing:.2px;background:#fffdf7;text-decoration:none;border-radius:999px;box-shadow:3px 3px 0 var(--ink)}
-.dashlink{width:338px;max-width:100%;margin-top:8px;padding:10px 12px;font-size:11.5px;letter-spacing:1.6px;
-  text-decoration:none;border-radius:999px;animation:charIn .5s ease both;animation-delay:.64s}
-.hstats{display:flex;width:338px;max-width:100%;margin-top:13px;padding-top:11px;
-  border-top:2.5px dashed rgba(20,17,14,.32);
-  animation:charIn .5s ease both;animation-delay:.72s}
-.hstats > div{flex:1;text-align:center;border-right:2px solid rgba(20,17,14,.16)}
-.hstats > div:last-child{border-right:none}
-.hstats b{display:block;font-size:20px;font-weight:900;line-height:1;font-family:var(--disp);letter-spacing:-.5px}
-.hstats span{display:block;font-size:9px;font-weight:800;letter-spacing:1.1px;color:var(--ink2);margin-top:4px}
-.hero .best{font-size:11.5px;font-weight:700;color:var(--ink2);margin-top:12px;
+.hbtns .btn{width:100%;padding:8px 2px;font-size:10.5px;letter-spacing:.3px;background:rgba(255,253,247,.95);
+  border:2px solid #a8341f;box-shadow:0 3px 0 rgba(147,31,17,.6);text-decoration:none;border-radius:999px}
+.hfoot{font-size:8.5px;letter-spacing:1px;color:#8a3b2c;margin-top:12px;
+  animation:charIn .5s ease both;animation-delay:.68s}
+.hero .stamp{position:absolute;left:50%;bottom:19%;width:146px;height:152px;transform:translateX(-50%) rotate(-8deg);
+  pointer-events:none;opacity:.5;z-index:1}
+.hero .stamp svg{width:100%;height:100%;display:block}
+.hero .best{font-size:10px;font-weight:800;letter-spacing:1px;color:#7d2415;margin-top:auto;padding-top:16px;
   animation:charIn .5s ease both;animation-delay:.7s}
-.hero .best b{color:var(--red);font-weight:900}
-.hero .hnote{font-size:9.5px;letter-spacing:.6px;color:var(--ink2);opacity:.8;margin-top:7px;
-  animation:charIn .5s ease both;animation-delay:.76s}
+.hero .best b{color:#b8321f;font-weight:900}
+
+.comicfoot{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:14px;
+  font-size:9.5px;font-weight:700;letter-spacing:.8px;color:var(--ink2)}
+.comicfoot span::before{content:"·";margin-right:14px;opacity:.5}
+.comicfoot span:first-child::before{content:"";margin:0}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
   padding:13px 30px;border:3px solid var(--ink);border-radius:8px;font-weight:900;font-size:14.5px;
@@ -164,9 +180,11 @@ h1,h2,h3,p{margin:0}
 .avatar-mini{width:42px;height:52px;flex:none}
 .avatar-mini svg{width:100%;height:100%}
 .err{color:var(--red);font-size:11.5px;font-weight:700;margin-top:8px}
+.deepline{font-size:11.5px;font-weight:800;color:#8a3a12;background:#fff6dd;border:2px dashed #cf7a2a;
+  border-radius:6px;padding:9px 12px;margin-bottom:18px;line-height:1.6}
 
 /* 章节地图 · 案卷墙 */
-#s-map{min-height:calc(100vh - 120px);display:flex;flex-direction:column;justify-content:center}
+#s-map{display:flex;flex-direction:column;justify-content:flex-start}
 .maps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .case{position:relative;border:3px solid var(--ink);border-radius:10px;overflow:hidden;
   display:flex;flex-direction:column;min-height:214px;background:var(--cc,#e9e2d2);
@@ -209,7 +227,7 @@ h1,h2,h3,p{margin:0}
 .pbar i{display:block;height:100%;background:var(--amber);width:0;transition:width .3s}
 .qcount{font-size:11.5px;font-weight:900;letter-spacing:1px;white-space:nowrap}
 .qcard{padding:26px 26px}
-#s-quiz{min-height:calc(100vh - 96px);display:flex;flex-direction:column;justify-content:center}
+#s-quiz{min-height:calc(100vh - 150px);display:flex;flex-direction:column;justify-content:center}
 #s-quiz .screenhead,#s-quiz .qcard{max-width:820px;width:100%;margin-left:auto;margin-right:auto}
 .qtag{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:1.4px;padding:3px 9px;border:2.5px solid var(--ink);border-radius:999px;background:var(--amber);margin-bottom:12px}
 .qscene{font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:var(--ink2);margin-bottom:5px}
@@ -274,6 +292,11 @@ h1,h2,h3,p{margin:0}
 
 .advice{font-size:12.5px;line-height:1.85;color:var(--ink);background:#fff6dd;border:2.5px solid var(--ink);border-radius:8px;padding:14px 16px;margin-bottom:16px}
 .advice b{font-weight:900}
+.mapfoot{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px;padding:14px 16px;
+  border:2.5px solid var(--ink);border-radius:8px;background:#fffdf7;box-shadow:4px 4px 0 var(--ink)}
+.mapfoot .t{flex:1;min-width:270px;font-size:12px;line-height:1.8;color:var(--ink2)}
+.mapfoot .t b{font-weight:900;color:var(--ink)}
+.mapfoot .t em{font-style:normal;color:#b8321f;font-weight:900}
 .acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:6px}
 
 /* 错题本 */
@@ -301,10 +324,13 @@ h1,h2,h3,p{margin:0}
   border:1.5px dashed var(--red);border-radius:5px;padding:3px 8px}
 
 @media (max-width:860px){
-  .comic{grid-template-columns:1fr 1fr;grid-template-rows:none;min-height:0}
+  .comic{grid-template-columns:1fr 1fr;grid-template-rows:none;min-height:0;gap:10px;padding:8px}
+  .comic > .pane{clip-path:none}
   .pane{min-height:220px}
-  .hero{grid-column:1 / -1;grid-row:auto;order:-1;padding:30px 18px 26px}
-  .hero .ttl{font-size:clamp(38px,9vw,58px)}
+  .hero{grid-column:1 / -1;grid-row:auto;order:-1;padding:30px 18px 26px;justify-content:center}
+  .hero .ttl{font-size:clamp(40px,9.5vw,62px)}
+  .hero .stamp{display:none}
+  .pane .art{inset:-2% -10% -6%}
   .maps{grid-template-columns:1fr 1fr}
   .roles{grid-template-columns:1fr 1fr}
   .scoreband{grid-template-columns:1fr}
@@ -314,7 +340,6 @@ h1,h2,h3,p{margin:0}
   .maps{grid-template-columns:1fr}
   .hbtns{gap:6px}
   .hbtns .btn{font-size:10.5px;padding:9px 0}
-  .dashlink{font-size:10.5px;letter-spacing:.6px}
 }
 @media print{
   body{background:#fff;background-image:none}
@@ -329,17 +354,18 @@ h1,h2,h3,p{margin:0}
 <body>
 <div class="wrap">
 
+  <!-- ================= 常驻顶栏 ================= -->
+  <div class="topbar">
+    <button class="brand" type="button" data-go="home"><span class="sq"></span>审计闯关 <small>AUDITQUEST</small></button>
+    <div class="topnav">
+      <span class="seg"><span class="cur">闯关</span><a data-dash href="看板/审计数据分析看板.html">看板</a></span>
+      <span class="tagline">大数据审计 · 个人作业</span>
+    </div>
+  </div>
+
   <!-- ================= 主菜单 ================= -->
   <section id="s-home">
-    <div class="topbar">
-      <div class="brand"><span class="sq"></span>审计闯关 <small>AUDITQUEST</small></div>
-      <div class="topnav">
-        <span class="seg"><span class="cur">闯关</span><a data-dash href="看板/审计数据分析看板.html">看板</a></span>
-        <span class="tagline">大数据审计 · 个人作业</span>
-      </div>
-    </div>
-
-    <div class="comic">
+      <div class="comic">
       <div class="pane c-blue" data-role="0" style="--i:0" role="button" tabindex="0">
         <span class="ribbon"><b>审计助理</b><span>从底稿做起</span></span>
         <div class="art"></div>
@@ -348,22 +374,26 @@ h1,h2,h3,p{margin:0}
       <div class="hero">
         <div class="kicker">审计学 · 课程实践</div>
         <h1 class="ttl"><span style="--d:0">审</span><span style="--d:1">计</span><span style="--d:2">闯</span><span style="--d:3">关</span></h1>
-        <div class="en">AUDIT QUEST</div>
-        <p class="sub">从签第一张底稿，到在系统里翻出一笔拆单付款。<br>五章加一卷，三十道现场题，答错当场给解析。</p>
+        <p class="sub">从签第一张底稿，到在系统里翻出一笔拆单付款</p>
         <button class="btn main" id="b-start">开始闯关</button>
         <div class="hbtns">
           <button class="btn sm ghost" id="b-continue">继续闯关</button>
           <button class="btn sm ghost" id="b-report0">成绩报告</button>
           <button class="btn sm ghost" id="b-wrong">错题本</button>
         </div>
-        <a class="btn sm dark dashlink" data-dash href="看板/审计数据分析看板.html">数据看板 · 三十笔异常怎么查 ↗</a>
-        <div class="hstats">
-          <div><b>6</b><span>章案卷</span></div>
-          <div><b>30</b><span>道情境题</span></div>
-          <div><b>1</b><span>个数据看板</span></div>
-        </div>
+        <span class="stamp" aria-hidden="true">
+          <svg viewBox="0 0 132 132">
+            <circle cx="66" cy="66" r="61" fill="none" stroke="#b8321f" stroke-width="2.4"/>
+            <circle cx="66" cy="66" r="51" fill="none" stroke="#b8321f" stroke-width="1.1"/>
+            <text x="66" y="31" text-anchor="middle" font-size="10.5" font-weight="700" fill="#b8321f" letter-spacing="2.6">2026 秋</text>
+            <text x="66" y="78" text-anchor="middle" font-size="40" font-weight="900" fill="#b8321f" font-family="PingFang SC,Hiragino Sans GB,sans-serif">审</text>
+            <text x="66" y="101" text-anchor="middle" font-size="8.5" font-weight="700" fill="#b8321f" letter-spacing="2.2">AUDIT QUEST</text>
+            <path d="M28 40 h76" stroke="#b8321f" stroke-width="1.1"/>
+            <path d="M28 110 h76" stroke="#b8321f" stroke-width="1.1"/>
+          </svg>
+        </span>
         <div class="best">历史最高 <b id="best">—</b></div>
-        <div class="hnote">题库依据中注协、ISACA 公开大纲 · 仅供课程练习</div>
+        <div class="hfoot">五章加综合卷 · 断网可玩 · 答错当场给解析</div>
       </div>
 
       <div class="pane c-amber" data-role="1" style="--i:1" role="button" tabindex="0">
@@ -380,6 +410,12 @@ h1,h2,h3,p{margin:0}
         <span class="ribbon"><b>数据分析师</b><span>全量核查</span></span>
         <div class="art"></div>
       </div>
+    </div>
+
+    <div class="comicfoot">
+      <span>题库依据中注协 / ISACA 公开大纲</span>
+      <span>每题标注来源编号与可信度</span>
+      <span>不调用任何在线大模型</span>
     </div>
 
     <details class="about">
@@ -412,6 +448,7 @@ h1,h2,h3,p{margin:0}
       <h2>创建你的审计身份</h2>
     </div>
     <div class="setupbox panel">
+      <p class="deepline" id="deepline" hidden></p>
       <div class="field">
         <label for="name">你的名字</label>
         <input class="input" id="name" maxlength="12" placeholder="输入名字，会印在通关证书上" autocomplete="off">
@@ -436,7 +473,11 @@ h1,h2,h3,p{margin:0}
     </div>
     <div class="maps" id="maps"></div>
     <div class="advice" style="margin-top:16px">
-      <b>怎么玩：</b>五章各自独立，点开就能进，每章 5 题。章内答完即出本章结算，正确率 100% 会在卡上盖「已结案」章。<b>综合卷</b>要等前五章都过一遍才解锁，5 道跨章题，考的是能不能把零散知识点串成一个案子。答错的题自动进错题本。
+      <b>怎么玩：</b>五章各自独立，点开就能进。章内答完即出本章结算，全对会在卡上盖「已结案」章。<b>综合卷</b>要等前五章都过一遍才解锁——考的不是记不记得，是能不能把五章串成一个案子。答错的题自动进错题本。
+    </div>
+    <div class="mapfoot">
+      <div class="t">这五章查的是「知不知道」。第 4 章那道抽样漏掉的拆单、第 5 章那批年末突击确认的发票，<b>真跑一遍在《审计现场 · 数据看板》</b>——4,860 张发票、37 笔异常，和案卷是同一个案子。<em>考完再去看，看得懂它在查什么。</em></div>
+      <a class="btn sm dark" data-dash href="看板/审计数据分析看板.html">去数据看板 →</a>
     </div>
   </section>
 
@@ -485,6 +526,8 @@ h1,h2,h3,p{margin:0}
         <button class="btn ghost" id="b-backmap">回案卷墙</button>
         <button class="btn" id="b-nextch">下一章</button>
       </div>
+      <a class="btn sm dark" id="b-enddash" data-dash href="看板/审计数据分析看板.html" hidden
+         style="margin-top:12px">这一章的案子，去数据看板跑一遍 →</a>
     </div>
   </section>
 
@@ -651,9 +694,9 @@ h1,h2,h3,p{margin:0}
      hint:"算一遍：只有 26+26 能到 52。找那两个 26% 的域，别看域号大小。"},
 
     {ch:3, scene:"周五 16:50 · 数据室",
-     stem:"835 笔流水，你想找出「同一个收款人在同一天被拆成好几笔付款」的情形。抽了 30 笔，一笔没碰上。问题出在哪？",
-     options:["运气不好，再抽 30 笔","抽样看的是单笔属性，而拆单是跨记录的「模式」，得靠全量规则筛查","应该直接问财务经理有没有拆单","拆单的每笔金额都很小，本来就不用管"],answer:1,
-     explain:"拆单的特征不在单笔金额上，而在「同一天 + 同一收款人 + 多笔」这个组合关系上。随机抽样时每笔被抽中的概率相同，天然不适合发现跨记录模式。这正是审计数据分析从「抽样推断」走向「全量筛查」的价值所在。",
+     stem:"4,860 张发票，你想找出「同一个客户在同一天被拆成好几张、张张卡在 5 万以下」的情形。抽了 60 张，一张没碰上。问题出在哪？",
+     options:["运气不好，再抽 60 张","抽样看的是单笔属性，而拆单是跨记录的「模式」，得靠全量规则筛查","应该直接问财务经理有没有拆单","拆单的每张金额都很小，本来就不用管"],answer:1,
+     explain:"拆单的特征不在单张金额上，而在「同一天 + 同一客户 + 多张」这个组合关系上。随机抽样时每张被抽中的概率相同，天然不适合发现跨记录模式。数据看板里那条 SQL 就是照这个思路写的：全量跑完命中 9 组、168.2 万元。",
      source:"S2（域 1 审计过程 · 数据分析技术）",conf:"可信度：高",
      hint:"抽样回答「这一笔对不对」，全量筛查回答「这批里有没有某种搭配」。拆单就是搭配。"},
 
@@ -772,7 +815,7 @@ h1,h2,h3,p{margin:0}
     {n:"证据与程序", t:"三样东西不能只看", d:"函证、监盘、分析程序、证据的充分与适当", c:"#2f8f63", tag:"CHAPTER 03"},
     {n:"IT 与数据", t:"从总账到数据库", d:"ITGC、CISA 五域、全量筛查、取数口径", c:"#2f9c95", tag:"CHAPTER 04"},
     {n:"舞弊与操守", t:"红旗与底线", d:"舞弊责任、收入假定、独立性、截止性", c:"#6b4fa0", tag:"CHAPTER 05"},
-    {n:"综合卷", t:"一个案子走完", d:"跨章五题 · 前五章通关后解锁", c:"#8f2c22", tag:"FINAL"}
+    {n:"综合卷", t:"一个案子走完", d:"跨章串联 · 一案到底", c:"#8f2c22", tag:"FINAL"}
   ];
 
   var SCENES = [
@@ -844,7 +887,7 @@ h1,h2,h3,p{margin:0}
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#2f6fb0" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M46 142 Q30 154 34 170" stroke="#24588c" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<path d="M114 142 Q130 154 126 170" stroke="#24588c" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
+      '<rect x="66" y="112" width="28" height="22" rx="3" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<rect x="40" y="178" width="80" height="18" rx="3" fill="#e8b23f" stroke="#14110e" stroke-width="3.5"/>'+
       '<rect x="36" y="162" width="88" height="17" rx="3" fill="#fffdf7" stroke="#14110e" stroke-width="3.5"/>'+
       '<rect x="40" y="148" width="80" height="15" rx="3" fill="#f4efe4" stroke="#14110e" stroke-width="3.5"/>'+
@@ -868,7 +911,7 @@ h1,h2,h3,p{margin:0}
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#2f9c95" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M48 142 Q34 160 40 180" stroke="#227a74" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<path d="M112 142 Q126 156 122 168" stroke="#227a74" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
+      '<rect x="66" y="112" width="28" height="22" rx="3" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<path d="M66 130 L80 150 L94 130" fill="#fff" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<rect x="86" y="150" width="58" height="46" rx="5" fill="#fff" stroke="#14110e" stroke-width="3.5"/>'+
       '<path d="M96 164 h38 M96 174 h28 M96 184 h33" stroke="#2f6fb0" stroke-width="3" stroke-linecap="round"/>'+
@@ -893,7 +936,7 @@ h1,h2,h3,p{margin:0}
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#6b4fa0" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M112 142 Q126 158 120 176" stroke="#553d80" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<path d="M46 142 Q56 160 70 172" stroke="#553d80" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
+      '<rect x="66" y="112" width="28" height="22" rx="3" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<path d="M68 130 L80 146 L92 130" fill="#fff" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M80 146 l-8 12 8 24 8-24 z" fill="#dd4a38" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
       '<rect x="22" y="150" width="54" height="50" rx="4" fill="#fffdf7" stroke="#14110e" stroke-width="3.5"/>'+
@@ -919,7 +962,7 @@ h1,h2,h3,p{margin:0}
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#2f8f63" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M50 146 Q36 158 40 176" stroke="#256f4d" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<path d="M114 142 Q124 152 120 162" stroke="#256f4d" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
+      '<rect x="66" y="112" width="28" height="22" rx="3" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<path d="M66 130 L80 150 L94 130" fill="#fff" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<rect x="82" y="142" width="66" height="58" rx="4" fill="#fffdf7" stroke="#14110e" stroke-width="3.5"/>'+
       '<rect x="90" y="176" width="12" height="16" fill="#e8b23f" stroke="#14110e" stroke-width="2.5"/>'+
@@ -954,6 +997,7 @@ h1,h2,h3,p{margin:0}
       picked:null, answered:false
     };
   }
+  var PENDING = null;   /* 深链 ?ch=n 待进入的章节 */
 
   function $(id){ return document.getElementById(id); }
   function chapterIdx(c){
@@ -998,6 +1042,10 @@ h1,h2,h3,p{margin:0}
     if(!nm){ $("nameErr").hidden=false; return; }
     state.name = nm.slice(0,12);
     save({best:(store()&&store().best)||0, name:state.name, role:state.role});
+    if(PENDING!==null){
+      var p=PENDING; PENDING=null;
+      renderMap(); enterChapter(p); return;
+    }
     renderMap();
     show("map");
   }
@@ -1030,9 +1078,7 @@ h1,h2,h3,p{margin:0}
       d.setAttribute("aria-label", c.n + (locked?"（未解锁）":""));
 
       var dots="";
-      var sub = locked
-        ? "通过前五章后解锁"
-        : (done===null ? total+" 题 · "+c.t : "最好 "+done+"/"+total+" · "+c.t);
+      var sub = locked ? "前五章都过一遍后解锁" : c.d;
 
       d.innerHTML =
         '<div class="no">'+(isBoss?"★":(i+1))+'</div>'+
@@ -1138,6 +1184,11 @@ h1,h2,h3,p{margin:0}
 
     var allDone = state.done.every(function(v){ return v!==null; });
     $("b-nextch").textContent = allDone ? "查看总成绩" : "回案卷墙";
+    var ed=$("b-enddash");
+    ed.hidden = !(state.ch===3 || state.ch===4);
+    ed.textContent = state.ch===3
+      ? "第 4 章的拆单，去数据看板跑一遍 →"
+      : "第 5 章这些红旗信号，在看板里长什么样 →";
     show("end");
   }
   function afterChapter(){
@@ -1188,7 +1239,7 @@ h1,h2,h3,p{margin:0}
 
     var adv="";
     if(t.score>=85){
-      adv="<b>框架已成型。</b>五章加综合卷，没有明显短板。下一步把「知道」换成「会用」——点下面的「去数据看板」，看 835 笔流水怎么按全量核查、金额分层、逐级下钻走一遍，再回头对准则条目。";
+      adv="<b>框架已成型。</b>五章加综合卷，没有明显短板。下一步把「知道」换成「会用」——点下面的「去数据看板」，看 4,860 张发票怎么按全量筛查、金额排序、Benford 分布走一遍，再回头对准则条目。";
     }else if(t.score>=60){
       adv="<b>框架基本掌握，仍有短板。</b>最薄弱的是 <b>"+weak.join("、")+"</b>。回到《题库与官方来源清单》，只看该章的准则编号 / 域权重对应表，先记结构再记细节。";
     }else{
@@ -1289,6 +1340,24 @@ h1,h2,h3,p{margin:0}
       else if(t==="map"){ renderMap(); show("map"); }
     });
   });
+
+  /* ---------- 深链：从数据看板跳回某一章（?ch=4） ---------- */
+  (function(){
+    var m=/[?&]ch=(\d{1,2})/.exec(location.search);
+    if(!m) return;
+    var idx=Math.max(0,Math.min(CHS.length-1,parseInt(m[1],10)-1));
+    if(idx===CHS.length-1 && bossLocked()) idx=0;
+    var s=store();
+    if(s && s.name){
+      state.name=s.name; state.role=(typeof s.role==="number")?s.role:0;
+      renderMap(); enterChapter(idx);
+    }else{
+      PENDING=idx; openSetup();
+      var dl=$("deepline");
+      dl.textContent="从数据看板过来的：填个名字，直接进第 "+(idx+1)+" 章「"+CHS[idx].n+"」。";
+      dl.hidden=false;
+    }
+  })();
 
   refreshBest();
 })();

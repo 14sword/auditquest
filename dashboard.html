@@ -84,6 +84,14 @@ a{color:inherit}
   place-items:center;font-size:12px;font-weight:900;margin-top:2px}
 .notice b{color:var(--red)}
 .notice code{background:rgba(20,17,14,.08);padding:1px 5px;border-radius:3px;font-size:10.5px}
+.tie{display:flex;gap:10px;align-items:flex-start;border:2.5px solid var(--ink);border-radius:8px;
+  background:#fffdf7;padding:10px 14px;font-size:11.5px;line-height:1.75;margin-bottom:16px;
+  box-shadow:3px 3px 0 var(--ink)}
+.tie .tk{flex:none;font-size:9.5px;font-weight:900;letter-spacing:1.4px;background:var(--ink);color:var(--paper2);
+  border-radius:4px;padding:2px 7px;margin-top:2px}
+.tie a{color:#b8321f;font-weight:900;text-decoration:none;border-bottom:2px solid rgba(184,50,31,.35)}
+.tie a:hover{border-bottom-color:#b8321f}
+.tie b{font-weight:900}
 
 /* KPI */
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
@@ -225,8 +233,8 @@ footer .fnote{margin-top:8px;display:flex;justify-content:space-between;gap:12px
   <div class="topbar">
     <div class="brand"><span class="sq"></span>审计现场 <small>DATA DASHBOARD</small></div>
     <div class="topnav">
-      <span class="seg"><a data-back href="../index.html">闯关</a><span class="cur">看板</span></span>
-      <a class="backlink" data-back href="../index.html">← 回到《审计闯关》<span>闯关考「知不知道」，看板看「会不会做」</span></a>
+      <span class="seg"><a data-home href="../index.html">闯关</a><span class="cur">看板</span></span>
+      <a class="backlink" data-back href="../index.html?ch=5">← 回到闯关 · 第 5 章<span>这一页的结论，就是那一章要你判断的事</span></a>
     </div>
   </div>
 
@@ -248,6 +256,11 @@ footer .fnote{margin-top:8px;display:flex;justify-content:space-between;gap:12px
       </dl>
     </div>
   </section>
+
+  <div class="tie">
+    <span class="tk">出处</span>
+    <p>这一页不是凭空做的数据：它就是《审计闯关》<a data-ch="4" href="../index.html?ch=4">第 4 章</a>「抽了 60 张，一张没碰上」的全量版，也是<a data-ch="5" href="../index.html?ch=5">第 5 章</a>「年末突击确认、次年初集中退回」的证据链。<b>闯关考判断，这里考动手。</b></p>
+  </div>
 
   <div class="notice">
     <span class="ic">!</span>
@@ -619,9 +632,19 @@ footer .fnote{margin-top:8px;display:flex;justify-content:space-between;gap:12px
 
   /* ============ 回链：本地 / 线上两种路径 ============ */
   (function(){
-    var to = (location.protocol==="file:") ? "../index.html" : "./index.html" + location.search;
+    var pre = (location.protocol==="file:") ? "../index.html" : "./index.html";
+    function to(ch){
+      var q = location.search ? location.search + (ch ? "&ch="+ch : "") : (ch ? "?ch="+ch : "");
+      return pre + q;
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-home]"),function(a){
+      a.setAttribute("href", to(null));
+    });
     Array.prototype.forEach.call(document.querySelectorAll("[data-back]"),function(a){
-      a.setAttribute("href",to);
+      a.setAttribute("href", to(5));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-ch]"),function(a){
+      a.setAttribute("href", to(a.getAttribute("data-ch")));
     });
   })();
 
