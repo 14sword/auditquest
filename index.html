@@ -93,12 +93,15 @@ h1,h2,h3,p{margin:0}
 .input{width:100%;padding:13px 14px;border:3px solid var(--ink);border-radius:8px;background:#fff;
   font-size:15px;font-family:inherit;color:var(--ink);outline:none;box-shadow:3px 3px 0 var(--ink)}
 .input:focus{box-shadow:4px 4px 0 var(--red)}
-.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
-.role{border:2.5px solid var(--ink);border-radius:8px;padding:12px 8px;text-align:center;background:#fff;
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.role{border:2.5px solid var(--ink);border-radius:10px;padding:10px 6px 12px;text-align:center;background:#fff;
   cursor:pointer;transition:.14s;box-shadow:2px 2px 0 var(--ink)}
+.role svg{width:94px;height:108px;display:block;margin:0 auto 6px}
 .role b{display:block;font-size:12.5px;font-weight:900;margin-bottom:3px}
 .role span{font-size:10px;color:var(--ink2);line-height:1.4;display:block}
 .role.on{background:var(--amber);transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+.avatar-mini{width:44px;height:52px;flex:none}
+.avatar-mini svg{width:100%;height:100%}
 .err{color:var(--red);font-size:11.5px;font-weight:700;margin-top:8px}
 
 /* 章节地图 */
@@ -316,6 +319,7 @@ h1,h2,h3,p{margin:0}
   <section id="s-map" hidden>
     <div class="screenhead">
       <button class="btn sm ghost" data-go="home">← 主菜单</button>
+      <div class="avatar-mini" id="map-avatar"></div>
       <h2 id="map-hello">章节地图</h2>
       <div class="spacer"></div>
       <button class="btn sm" id="b-report">查看成绩报告</button>
@@ -504,10 +508,62 @@ h1,h2,h3,p{margin:0}
   ];
 
   var ROLES = [
-    {n:"审计助理", d:"从底稿做起"},
-    {n:"IT 审计员", d:"系统与数据"},
-    {n:"内控专员", d:"流程与控制"},
-    {n:"数据分析师", d:"全量核查"}
+    {n:"审计助理", d:"从底稿做起", svg:
+      '<svg viewBox="0 0 120 140" aria-hidden="true">'+
+      '<path d="M30 140 Q30 94 60 94 Q90 94 90 140 Z" fill="#2f6fb0" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M50 96 L60 112 L70 96 Z" fill="#fff" stroke="#14110e" stroke-width="3"/>'+
+      '<circle cx="60" cy="58" r="28" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M32 54 Q33 26 60 26 Q87 26 88 54 Q78 40 60 39 Q42 40 32 54 Z" fill="#1c1a17" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+      '<circle cx="50" cy="60" r="3.2" fill="#14110e"/><circle cx="70" cy="60" r="3.2" fill="#14110e"/>'+
+      '<path d="M54 71 Q60 75 66 71" fill="none" stroke="#14110e" stroke-width="2.4" stroke-linecap="round"/>'+
+      '<rect x="32" y="102" width="56" height="30" rx="3" fill="#d9a441" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M32 111 H88" stroke="#14110e" stroke-width="2.5"/>'+
+      '<circle cx="30" cy="117" r="7" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '<circle cx="90" cy="117" r="7" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '</svg>'},
+
+    {n:"IT 审计员", d:"系统与数据", svg:
+      '<svg viewBox="0 0 120 140" aria-hidden="true">'+
+      '<path d="M30 140 Q30 94 60 94 Q90 94 90 140 Z" fill="#2f9c95" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M50 96 L60 110 L70 96 Z" fill="#fff" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M86 50 Q100 58 98 86 Q92 80 88 66 Z" fill="#3a2a1d" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+      '<circle cx="60" cy="58" r="28" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M32 56 Q33 26 60 26 Q87 26 88 56 Q84 38 60 37 Q36 38 32 56 Z" fill="#3a2a1d" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+      '<circle cx="50" cy="60" r="8.5" fill="none" stroke="#14110e" stroke-width="2.6"/>'+
+      '<circle cx="70" cy="60" r="8.5" fill="none" stroke="#14110e" stroke-width="2.6"/>'+
+      '<path d="M58.5 60 H61.5" stroke="#14110e" stroke-width="2.6"/>'+
+      '<circle cx="50" cy="60" r="2.8" fill="#14110e"/><circle cx="70" cy="60" r="2.8" fill="#14110e"/>'+
+      '<path d="M54 73 Q60 77 66 73" fill="none" stroke="#14110e" stroke-width="2.4" stroke-linecap="round"/>'+
+      '<rect x="60" y="98" width="46" height="38" rx="3" fill="#fff" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M68 108 H98 M68 116 H88 M68 124 H94" stroke="#2f6fb0" stroke-width="2.5"/>'+'<circle cx="60" cy="117" r="7" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '</svg>'},
+
+    {n:"内控专员", d:"流程与控制", svg:
+      '<svg viewBox="0 0 120 140" aria-hidden="true">'+
+      '<path d="M30 140 Q30 94 60 94 Q90 94 90 140 Z" fill="#4a4a52" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M50 96 L60 110 L70 96 Z" fill="#fff" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M58 110 L60 128 L62 110 Z" fill="#dd4a38" stroke="#14110e" stroke-width="2"/>'+
+      '<circle cx="60" cy="58" r="28" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M32 54 Q33 26 60 26 Q87 26 88 54 Q78 40 60 39 Q42 40 32 54 Z" fill="#2a2622" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+      '<circle cx="50" cy="60" r="3.2" fill="#14110e"/><circle cx="70" cy="60" r="3.2" fill="#14110e"/>'+
+      '<path d="M46 72 Q60 86 74 72" fill="none" stroke="#2a2622" stroke-width="5" stroke-linecap="round"/>'+
+      '<rect x="16" y="96" width="42" height="44" rx="3" fill="#fff" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M24 109 l5 5 l8 -9" fill="none" stroke="#2f8f63" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<path d="M42 111 H52 M24 122 H52 M24 131 H46" stroke="#14110e" stroke-width="2"/>'+'<circle cx="58" cy="118" r="7" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '</svg>'},
+
+    {n:"数据分析师", d:"全量核查", svg:
+      '<svg viewBox="0 0 120 140" aria-hidden="true">'+
+      '<path d="M30 140 Q30 94 60 94 Q90 94 90 140 Z" fill="#2f8f63" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M54 100 L54 112 M66 100 L66 112" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'+
+      '<circle cx="60" cy="58" r="28" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '<path d="M32 58 Q30 26 60 26 Q90 26 88 58 Q88 42 60 40 Q32 42 32 58 Z" fill="#241c18" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+      '<circle cx="50" cy="60" r="3.2" fill="#14110e"/><circle cx="70" cy="60" r="3.2" fill="#14110e"/>'+
+      '<path d="M54 72 Q60 76 66 72" fill="none" stroke="#14110e" stroke-width="2.4" stroke-linecap="round"/>'+
+      '<rect x="64" y="112" width="13" height="26" fill="#e8b23f" stroke="#14110e" stroke-width="2.5"/>'+
+      '<rect x="81" y="100" width="13" height="38" fill="#fff" stroke="#14110e" stroke-width="2.5"/>'+'<rect x="98" y="106" width="13" height="32" fill="#5aa9ff" stroke="#14110e" stroke-width="2.5"/>'+
+      '<path d="M60 140 H113" stroke="#14110e" stroke-width="3"/>'+'<circle cx="58" cy="120" r="7" fill="#f2cfae" stroke="#14110e" stroke-width="3"/>'+
+      '</svg>'}
   ];
 
   var KEY = "auditquest_v2";
@@ -554,7 +610,7 @@ h1,h2,h3,p{margin:0}
     ROLES.forEach(function(r,i){
       var d=document.createElement("div");
       d.className="role"+(state.role===i?" on":"");
-      d.innerHTML="<b>"+r.n+"</b><span>"+r.d+"</span>";
+      d.innerHTML=r.svg+"<b>"+r.n+"</b><span>"+r.d+"</span>";
       d.addEventListener("click",function(){ state.role=i; renderRoles(); });
       box.appendChild(d);
     });
@@ -570,6 +626,7 @@ h1,h2,h3,p{margin:0}
 
   /* ---------- 章节地图 ---------- */
   function renderMap(){
+    $("map-avatar").innerHTML = ROLES[state.role] ? ROLES[state.role].svg : "";
     $("map-hello").textContent = state.name ? (state.name+" 的章节地图") : "章节地图";
     var box=$("maps"); box.innerHTML="";
     CHS.forEach(function(c,i){
