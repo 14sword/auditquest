@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="审计闯关 AuditQuest：CPA《审计》框架、中国审计准则、CISA 五域三章十二题。单文件离线运行，无网络请求。">
+<title>审计闯关 · AuditQuest｜个人作业版</title>
+<style>
+:root{
+  --bg:#070a10; --panel:#0f1621; --panel2:#0b1119; --line:#1d2836;
+  --text:#e9eff8; --dim:#8797ae; --accent:#2fd6ae; --gold:#f2b535;
+  --red:#ff5f6d; --blue:#5aa9ff; --shadow:0 18px 48px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 520px at 12% -10%, rgba(47,214,174,.15), transparent 62%),
+    radial-gradient(820px 500px at 90% 2%, rgba(90,169,255,.12), transparent 64%),
+    var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  min-height:100vh; line-height:1.66;
+  -webkit-font-smoothing:antialiased;
+}
+[hidden]{display:none!important}
+.wrap{max-width:1000px;margin:0 auto;padding:30px 22px 72px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+h1,h2,h3,p{margin:0}
+
+/* ---------- 首页 ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:34px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.4px}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 16px var(--accent)}
+.brand small{color:var(--dim);font-weight:500;font-size:12px;letter-spacing:.6px}
+.tagline{font-size:12px;color:var(--dim);border:1px solid var(--line);padding:5px 11px;border-radius:999px}
+
+.hero{text-align:center;padding:26px 0 10px}
+.eyebrow{display:inline-block;font-size:12px;letter-spacing:2.4px;color:var(--accent);
+  border:1px solid rgba(47,214,174,.35);background:rgba(47,214,174,.07);
+  padding:6px 14px;border-radius:999px;margin-bottom:22px}
+h1{font-size:clamp(46px,9vw,88px);line-height:1.02;letter-spacing:-3px;font-weight:800;
+  background:linear-gradient(96deg,#ffffff 8%,#bff5e8 38%,#2fd6ae 62%,#5aa9ff 96%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px}
+h1 .en{display:block;font-size:.30em;letter-spacing:7px;font-weight:600;
+  -webkit-text-fill-color:var(--dim);color:var(--dim);margin-top:16px}
+.lede{color:var(--dim);font-size:clamp(14px,1.6vw,17px);margin:14px auto 30px;max-width:560px}
+.lede b{color:var(--text);font-weight:600}
+
+.statband{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 auto 32px;max-width:640px}
+.stat{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,0));border:1px solid var(--line);
+  border-radius:14px;padding:16px 10px}
+.stat b{display:block;font-size:30px;font-weight:800;letter-spacing:-1px;line-height:1.1}
+.stat span{font-size:11px;color:var(--dim);letter-spacing:1px}
+.stat:nth-child(1) b{color:var(--accent)}
+.stat:nth-child(2) b{color:var(--gold)}
+.stat:nth-child(3) b{color:var(--blue)}
+.stat:nth-child(4) b{color:var(--text)}
+
+.cta{display:flex;flex-direction:column;align-items:center;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:16px 46px;border-radius:999px;font-size:16px;font-weight:700;letter-spacing:.5px;
+  transition:transform .16s ease, box-shadow .16s ease, opacity .16s ease}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:linear-gradient(100deg,#2fd6ae,#43b8ff);color:#04120e;
+  box-shadow:0 12px 34px rgba(47,214,174,.30)}
+.btn-primary:hover{box-shadow:0 16px 44px rgba(47,214,174,.44);transform:translateY(-1px)}
+.btn-ghost{border:1px solid var(--line);color:var(--text);background:rgba(255,255,255,.02);padding:12px 26px;font-size:14px}
+.btn-ghost:hover{border-color:#2d3d52}
+.best{font-size:13px;color:var(--dim)}
+.best b{color:var(--gold);font-size:15px}
+
+.sect-title{display:flex;align-items:center;gap:12px;margin:56px 0 18px;font-size:13px;color:var(--dim);letter-spacing:1.6px}
+.sect-title::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.chapters{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.chap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 20px;
+  transition:border-color .18s,transform .18s}
+.chap:hover{border-color:#2c4056;transform:translateY(-2px)}
+.chap .no{font-size:12px;color:var(--dim);letter-spacing:2px}
+.chap h3{font-size:17px;margin:8px 0 10px;font-weight:700;letter-spacing:-.2px}
+.chap p{font-size:13px;color:var(--dim);line-height:1.7}
+.chap .cnt{margin-top:14px;font-size:12px;color:var(--accent)}
+
+.about{margin-top:44px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:6px 20px}
+.about summary{cursor:pointer;padding:14px 0;font-size:14px;font-weight:600;letter-spacing:.3px;list-style:none}
+.about summary::-webkit-details-marker{display:none}
+.about summary::before{content:"+";display:inline-block;width:18px;color:var(--accent);font-weight:700}
+.about[open] summary::before{content:"−"}
+.about .body{padding:0 0 20px 18px;font-size:13.5px;color:var(--dim);line-height:1.85}
+.about .body h4{color:var(--text);font-size:13px;margin:16px 0 6px;letter-spacing:.4px}
+.about .body ul{margin:6px 0;padding-left:18px}
+.about .body li{margin:3px 0}
+.about .body code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#bff5e8}
+.note-inline{display:inline-block;margin-top:8px;font-size:11.5px;color:var(--gold);
+  border:1px dashed rgba(242,181,53,.4);border-radius:8px;padding:5px 10px}
+
+/* ---------- 答题 ---------- */
+.qtop{display:flex;align-items:center;gap:16px;margin-bottom:26px}
+.qtop .counter{font-size:13px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:64px;text-align:right}
+.progress{flex:1;height:6px;background:#131c28;border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,#2fd6ae,#5aa9ff);transition:width .35s ease}
+
+.qcard{background:var(--panel);border:1px solid var(--line);border-radius:18px;
+  padding:clamp(22px,4vw,40px);box-shadow:var(--shadow)}
+.qmeta{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--accent);letter-spacing:1.4px;margin-bottom:16px}
+.qmeta .pill{border:1px solid rgba(47,214,174,.3);background:rgba(47,214,174,.08);padding:3px 10px;border-radius:999px}
+.qstem{font-size:clamp(18px,2.3vw,23px);font-weight:700;line-height:1.55;letter-spacing:-.3px;margin-bottom:26px}
+
+.opts{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.opt{display:flex;align-items:flex-start;gap:14px;text-align:left;width:100%;
+  background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+  padding:15px 17px;font-size:15px;line-height:1.6;color:var(--text);
+  transition:border-color .15s, background .15s, transform .12s}
+.opt:hover:not(:disabled){border-color:#31465e;background:#111b27;transform:translateX(2px)}
+.opt .key{flex:none;width:26px;height:26px;border-radius:7px;background:#182333;color:var(--dim);
+  display:grid;place-items:center;font-size:13px;font-weight:700}
+.opt.sel{border-color:var(--accent);background:rgba(47,214,174,.09)}
+.opt.sel .key{background:var(--accent);color:#04120e}
+.opt.correct{border-color:var(--accent);background:rgba(47,214,174,.13)}
+.opt.correct .key{background:var(--accent);color:#04120e}
+.opt.wrong{border-color:var(--red);background:rgba(255,95,109,.10)}
+.opt.wrong .key{background:var(--red);color:#fff}
+.opt:disabled{cursor:default}
+
+.feedback{border-radius:12px;padding:16px 18px;font-size:14px;line-height:1.75;margin-bottom:20px;
+  border-left:3px solid var(--accent);background:rgba(47,214,174,.07)}
+.feedback.bad{border-left-color:var(--red);background:rgba(255,95,109,.07)}
+.feedback .verdict{font-weight:700;margin-bottom:6px;letter-spacing:.3px}
+.feedback .verdict.ok{color:var(--accent)}
+.feedback .verdict.no{color:var(--red)}
+.feedback .src{display:inline-block;margin-top:9px;font-size:11.5px;color:var(--dim);
+  border:1px solid var(--line);border-radius:6px;padding:2px 8px;margin-right:6px}
+
+.hintbox{border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.75;margin-bottom:18px;
+  border:1px dashed rgba(242,181,53,.42);background:rgba(242,181,53,.06);color:#f0d69a}
+.hintbox .tag{display:block;font-size:11px;letter-spacing:1.2px;color:var(--gold);margin-bottom:6px}
+
+.qfoot{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.spacer{flex:1}
+.btn-sm{padding:11px 24px;border-radius:10px;font-size:14px;font-weight:600;
+  background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--text);transition:.15s}
+.btn-sm:hover{border-color:#31465e;background:rgba(255,255,255,.08)}
+.btn-sm.primary{background:linear-gradient(100deg,#2fd6ae,#43b8ff);color:#04120e;border:none}
+.btn-sm.primary:hover{opacity:.92}
+.btn-sm:disabled{opacity:.4;cursor:not-allowed}
+
+/* ---------- 成绩 ---------- */
+.result{max-width:760px;margin:0 auto}
+.scorecard{background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  padding:clamp(26px,5vw,48px);box-shadow:var(--shadow);text-align:center;margin-bottom:20px}
+.res-label{font-size:12px;letter-spacing:2.6px;color:var(--dim);margin-bottom:10px}
+.bignum{font-size:clamp(76px,15vw,132px);font-weight:800;line-height:.95;letter-spacing:-6px;
+  background:linear-gradient(96deg,#ffffff,#bff5e8 45%,#2fd6ae);-webkit-background-clip:text;
+  background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+.bignum span{font-size:.26em;letter-spacing:0;-webkit-text-fill-color:var(--dim);color:var(--dim);font-weight:600;margin-left:6px}
+.level{display:inline-block;margin-top:14px;padding:7px 22px;border-radius:999px;font-size:14px;
+  font-weight:700;letter-spacing:2px}
+.level.l0{border:1px solid rgba(255,95,109,.45);background:rgba(255,95,109,.10);color:#ff8b95}
+.level.l1{border:1px solid rgba(242,181,53,.45);background:rgba(242,181,53,.10);color:var(--gold)}
+.level.l2{border:1px solid rgba(47,214,174,.45);background:rgba(47,214,174,.10);color:var(--accent)}
+.res-sub{color:var(--dim);font-size:13.5px;margin-top:14px}
+
+.chblock{margin:26px 0 6px;text-align:left}
+.chrow{display:flex;align-items:center;gap:14px;padding:9px 0;font-size:13.5px}
+.chrow .name{width:132px;flex:none;color:var(--dim)}
+.chrow .track{flex:1;height:8px;background:#141e2b;border-radius:999px;overflow:hidden}
+.chrow .track i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#2fd6ae,#5aa9ff)}
+.chrow .track i.low{background:linear-gradient(90deg,#ff5f6d,#ffa07a)}
+.chrow .pct{width:48px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700;font-size:13px}
+
+.advice{text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:14px;
+  padding:18px 20px;font-size:13.5px;color:var(--dim);line-height:1.85;margin-top:22px}
+.advice b{color:var(--text)}
+.advice .k{color:var(--gold)}
+
+.res-actions{display:flex;gap:12px;justify-content:center;margin:24px 0 8px;flex-wrap:wrap}
+.foot-note{text-align:center;font-size:11.5px;color:#5f6f85;margin-top:26px;line-height:1.8}
+
+/* ---------- 打印 ---------- */
+@media print{
+  body{background:#fff;color:#111}
+  .no-print{display:none!important}
+  .wrap{max-width:none;padding:0}
+  .scorecard{border:1px solid #ccc;box-shadow:none;background:#fff;color:#111;page-break-inside:avoid}
+  .bignum{-webkit-text-fill-color:#111;color:#111;background:none}
+  .bignum span{-webkit-text-fill-color:#555;color:#555}
+  .res-label,.res-sub,.advice,.chrow .name{color:#333}
+  .advice{background:#fff;border:1px solid #ddd}
+  .chrow .track{background:#eee}
+  .chrow .track i{background:#111}
+  .level{border:1px solid #999!important;background:#fff!important;color:#111!important}
+  .foot-note{color:#666}
+}
+
+@media (max-width:720px){
+  .statband{grid-template-columns:repeat(2,1fr)}
+  .chapters{grid-template-columns:1fr}
+  .chrow .name{width:96px;font-size:12px}
+  h1{letter-spacing:-2px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ 首页 ============ -->
+  <section id="screen-home">
+    <div class="topbar">
+      <div class="brand"><span class="dot"></span>审计闯关 <small>AUDITQUEST</small></div>
+      <div class="tagline">大数据审计 · 个人作业 · 2026</div>
+    </div>
+
+    <div class="hero">
+      <div class="eyebrow">三章 · 十二题 · 只考审计框架</div>
+      <h1>审计闯关<span class="en">AUDIT QUEST</span></h1>
+      <p class="lede">从<b>中国审计准则</b>到<b>CPA《审计》框架</b>，再到<b>CISA 五域与 IT 审计</b>。<br>单选题，即时反馈，成绩可打印，进度自动保存。</p>
+
+      <div class="statband">
+        <div class="stat"><b>3</b><span>知识章</span></div>
+        <div class="stat"><b>12</b><span>题目</span></div>
+        <div class="stat"><b>7</b><span>官方来源</span></div>
+        <div class="stat"><b>0</b><span>网络请求</span></div>
+      </div>
+
+      <div class="cta">
+        <button class="btn btn-primary" id="btn-start">开始闯关</button>
+        <div class="best">历史最高分 <b id="best-score">—</b></div>
+      </div>
+    </div>
+
+    <div class="sect-title">知识线</div>
+    <div class="chapters">
+      <div class="chap">
+        <div class="no">CHAPTER 01</div>
+        <h3>审计准则与审计流程</h3>
+        <p>中注协执业准则（CSA 序列）、审计署《国家审计准则》、风险导向流程的阶段归属。</p>
+        <div class="cnt">4 题 · 考「编号对应什么」</div>
+      </div>
+      <div class="chap">
+        <div class="no">CHAPTER 02</div>
+        <h3>CPA《审计》科目框架</h3>
+        <p>2026 年考试大纲的模块主线：风险评估、风险应对、完成与报告、内控审计、质量管理。</p>
+        <div class="cnt">4 题 · 考「工作属于哪阶段」</div>
+      </div>
+      <div class="chap">
+        <div class="no">CHAPTER 03</div>
+        <h3>CISA 与 IT / 数据审计</h3>
+        <p>ISACA 2024 版五域及权重、通用控制与应用控制、审计数据分析的体系定位。</p>
+        <div class="cnt">4 题 · 考「域与权重」</div>
+      </div>
+    </div>
+
+    <details class="about">
+      <summary>关于本项目 · 知识库 · AI 使用说明</summary>
+      <div class="body">
+        <h4>项目性质</h4>
+        <p>本项目为<b>个人新建</b>（2026-11-15），单文件、零依赖、断网可运行。与课程小组作业「三表贯通完整性审计」「港口三方核查演示」<b>无代码复用、无内容复制</b>，小组材料不计入本项目个人贡献。</p>
+
+        <h4>知识来源与可信度</h4>
+        <ul>
+          <li><code>S1</code> 中注协 2026 年 CPA《审计》考试大纲（通知页已核验，PDF 正文未逐字核对，可信度：中）</li>
+          <li><code>S2</code> ISACA CISA Exam Content Outline 2024 版，五域权重 18/18/12/26/26（可信度：高）</li>
+          <li><code>S3</code> ISACA 中国 CISA 认证内容页（中文域名称，可信度：高）</li>
+          <li><code>S4</code> 中注协中国注册会计师执业准则目录（CSA 1101/1121/1131/1201/1211/1231/1301/1313/1501 等，可信度：高）</li>
+          <li><code>S5</code> 审计署《中华人民共和国国家审计准则》全文（审计署令第 8 号，可信度：高）</li>
+          <li><code>S6</code> 国办发〔2001〕88 号（仅登记备查，未逐字核对，不用于出题）</li>
+          <li><code>S7</code> 审计署第 33 号公告（官网原文未检索到，不引用、不出题）</li>
+        </ul>
+
+        <h4>AI 使用说明（必读）</h4>
+        <p>页面内的「本地提示」为<b>预先写入的规则文本</b>，按题号匹配显示，不调用任何在线大模型，页面不发起任何网络请求、不读取任何密钥。<span class="note-inline">本地规则提示 · 非在线大模型调用</span></p>
+
+        <h4>知识库与过程记录</h4>
+        <p>配套 IMA 知识库「学校相关任务」共 6 个目录；10 月 AI 协作过程见随附《06_10月AI协作日志.md》，开发、测试、调试、验收文档见《过程备查/》。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ 答题 ============ -->
+  <section id="screen-quiz" hidden>
+    <div class="qtop no-print">
+      <button class="btn-sm" id="btn-quit">退出</button>
+      <div class="progress"><i id="bar"></i></div>
+      <div class="counter" id="counter">1 / 12</div>
+    </div>
+
+    <div class="qcard">
+      <div class="qmeta"><span class="pill" id="q-chapter">第一章</span><span id="q-chapter-name"></span></div>
+      <h2 class="qstem" id="q-stem"></h2>
+      <div class="opts" id="opts"></div>
+
+      <div class="hintbox" id="hintbox" hidden>
+        <span class="tag">本地规则提示 · 非在线大模型调用</span>
+        <span id="hint-text"></span>
+      </div>
+
+      <div class="feedback" id="feedback" hidden>
+        <div class="verdict" id="verdict"></div>
+        <div id="explain"></div>
+        <div><span class="src" id="src-tag"></span><span class="src" id="conf-tag"></span></div>
+      </div>
+
+      <div class="qfoot">
+        <button class="btn-sm" id="btn-hint">本地提示</button>
+        <div class="spacer"></div>
+        <button class="btn-sm primary" id="btn-submit" disabled>确认作答</button>
+        <button class="btn-sm primary" id="btn-next" hidden>下一题</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 成绩 ============ -->
+  <section id="screen-result" hidden>
+    <div class="result">
+      <div class="scorecard" id="printable">
+        <div class="res-label">本次成绩</div>
+        <div class="bignum" id="score">0<span>分</span></div>
+        <div class="level l0" id="level">入门</div>
+        <div class="res-sub" id="correct-line"></div>
+
+        <div class="chblock" id="chblock"></div>
+
+        <div class="advice" id="advice"></div>
+        <div class="foot-note">
+          审计闯关 AuditQuest · 个人作业版 · 题库来源见《题库与官方来源清单》<br>
+          本页成绩由本地 JavaScript 计算，无网络请求、无在线模型调用
+        </div>
+      </div>
+
+      <div class="res-actions no-print">
+        <button class="btn btn-primary" id="btn-again">再来一次</button>
+        <button class="btn btn-ghost" id="btn-print">打印 / 存为 PDF</button>
+        <button class="btn btn-ghost" id="btn-home">返回首页</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var QUESTIONS = [
+    {
+      ch:0,
+      stem:"我国注册会计师执业准则体系中，专门规范「审计工作底稿」的准则是：",
+      options:["CSA 1121","CSA 1131","CSA 1211","CSA 1301"],
+      answer:1,
+      explain:"CSA 1131《审计工作底稿》规范底稿的编制、复核与归档保管。CSA 1121 是质量管理，CSA 1211 是重大错报风险的识别和评估，CSA 1301 是审计证据。",
+      source:"S4 中注协执业准则目录", conf:"可信度：高",
+      hint:"先排除 1211（风险评估）与 1301（审计证据），剩下两个里，1121 属于质量管理层面，1131 才是具体规范底稿的那一项。"
+    },
+    {
+      ch:0,
+      stem:"「重大错报风险的识别和评估」对应的具体审计准则是：",
+      options:["CSA 1201","CSA 1211","CSA 1231","CSA 1313"],
+      answer:1,
+      explain:"CSA 1211 规范重大错报风险的识别和评估；CSA 1231 是「针对评估的重大错报风险采取的应对措施」；CSA 1201 是计划审计工作；CSA 1313 是分析程序。",
+      source:"S4 中注协执业准则目录", conf:"可信度：高",
+      hint:"注意 1231 是「应对措施」，方向与「识别和评估」相反；1201 是计划审计工作。别被编号顺序带偏。"
+    },
+    {
+      ch:0,
+      stem:"《中华人民共和国国家审计准则》的制定与发布主体是：",
+      options:["财政部","中国注册会计师协会","审计署","国务院"],
+      answer:2,
+      explain:"国家审计准则由审计署制定并以审计署令发布（审计署令第 8 号，2010 年公布、2011 年 1 月 1 日施行），规范审计机关和审计人员执行审计业务的行为。注册会计师执业准则则由中注协制定。",
+      source:"S5 审计署《国家审计准则》", conf:"可信度：高",
+      hint:"区分两套体系：管注册会计师的是中注协，管审计机关和审计人员的是审计署。题目问的是后者。"
+    },
+    {
+      ch:0,
+      stem:"审计业务流程中，「了解被审计单位及其环境、识别和评估重大错报风险」属于哪个环节：",
+      options:["接受业务委托与计划审计工作","实施进一步审计程序","完成审计工作","出具审计报告"],
+      answer:0,
+      explain:"风险导向审计下，了解被审计单位及其环境、识别和评估重大错报风险是计划阶段的核心工作（CSA 1201、CSA 1211）；之后才针对评估的风险设计和实施进一步审计程序（CSA 1231）。",
+      source:"S4 中注协执业准则目录", conf:"可信度：高",
+      hint:"风险导向的顺序是「先评估、再应对」。了解被审计单位及其环境属于评估环节，发生在前，不可能是应对阶段。"
+    },
+    {
+      ch:1,
+      stem:"现行注册会计师考试《审计》科目所采用的主线是：",
+      options:["以账户余额为主的详细审计","风险导向审计","以税务合规为主线的审计","以凭证抽查为主线的审计"],
+      answer:1,
+      explain:"现行《审计》大纲与教材以风险导向审计为主线组织内容：风险评估 → 风险应对 → 完成审计工作与出具审计报告。",
+      source:"S1 中注协 2026 年《审计》考试大纲", conf:"可信度：中",
+      hint:"教材的章节顺序就是线索：先讲风险评估，再讲风险应对，最后讲报告。这条线叫风险导向。"
+    },
+    {
+      ch:1,
+      stem:"下列工作属于「完成审计工作与出具审计报告」阶段的是：",
+      options:["了解被审计单位的内部控制","确定财务报表整体重要性水平","评价审计证据的充分性和适当性并形成审计意见","实施控制测试"],
+      answer:2,
+      explain:"了解内控、确定重要性属计划与风险评估阶段；控制测试属风险应对阶段；评价证据的充分性和适当性、形成审计意见，才是完成阶段的核心工作，随后按 CSA 1501 出具报告。",
+      source:"S1 大纲 + S4 准则目录", conf:"可信度：中",
+      hint:"按阶段归类：了解内控、定重要性都在前面；控制测试属于应对；只有「评价证据、形成意见」发生在收尾。"
+    },
+    {
+      ch:1,
+      stem:"关于内部控制审计与财务报表审计的关系，正确的是：",
+      options:["两者必须由不同会计师事务所分别执行","两者可以整合进行，共享部分了解与测试工作","内部控制审计不属于鉴证业务","财务报表审计无需关注内部控制"],
+      answer:1,
+      explain:"整合审计是实务通行做法：两者目标不同，但可共享风险评估与了解内部控制的工作成果。内部控制审计属于鉴证业务；财务报表审计必须了解内部控制以识别和评估重大错报风险。",
+      source:"S1 大纲 + S4 准则目录", conf:"可信度：中",
+      hint:"关键词是「共享工作、目标不同」。两者既不是排他关系，也不是可以互不理会。"
+    },
+    {
+      ch:1,
+      stem:"规范「对财务报表审计实施的质量管理」（项目层面质量管理）的准则是：",
+      options:["CSA 1101","CSA 1121","CSA 1131","CSA 1501"],
+      answer:1,
+      explain:"CSA 1121《对财务报表审计实施的质量管理》规范项目层面的质量管理；CSA 1101 是注册会计师的总体目标；CSA 1131 是审计工作底稿；CSA 1501 是对财务报表形成审计意见和出具审计报告。",
+      source:"S4 中注协执业准则目录", conf:"可信度：高",
+      hint:"1101 是总体目标，别混。质量管理对应 1121，底稿是 1131，报告是 1501——记住三个尾号：21 管理、31 底稿、01 报告。"
+    },
+    {
+      ch:2,
+      stem:"ISACA CISA 考试内容大纲（2024 版）中，权重为 12% 的知识域是：",
+      options:["信息系统审计过程","IT 治理与管理","信息系统的获取、开发与实施","信息资产的保护"],
+      answer:2,
+      explain:"2024 版五域权重为：信息系统审计过程 18%、IT 治理与管理 18%、信息系统的获取开发与实施 12%、信息系统运行与业务韧性 26%、信息资产保护 26%。",
+      source:"S2 ISACA CISA ECO 2024", conf:"可信度：高",
+      hint:"五域里只有一个 12%，就是「获取、开发与实施」——它范围最窄，权重最低。另两个 18%，两个 26%。"
+    },
+    {
+      ch:2,
+      stem:"CISA 五个知识域中，权重合计达到 52% 的两个域是：",
+      options:["域 1 与域 2","域 2 与域 3","域 4 与域 5","域 1 与域 5"],
+      answer:2,
+      explain:"域 4「信息系统运行与业务韧性」26% + 域 5「信息资产保护」26% = 52%，是五个域中权重最高的两块，也是考试重点。",
+      source:"S2 ISACA CISA ECO 2024", conf:"可信度：高",
+      hint:"算一下：只有 26% + 26% 能凑到 52%。找那两个 26% 的域——运行与业务韧性、信息资产保护。"
+    },
+    {
+      ch:2,
+      stem:"在 IT 审计中，下列属于「通用控制（General Controls）」的是：",
+      options:["输入字段的格式校验","用户访问权限管理与变更管理","单笔交易的金额上限校验","凭证借贷平衡校验"],
+      answer:1,
+      explain:"通用控制作用于整个信息系统环境（访问控制、变更管理、运行与备份、职责分离等），影响所有应用；其余三项属应用控制，作用于具体业务流程。",
+      source:"S2 ISACA CISA ECO 2024 域 4 / 域 5", conf:"可信度：高",
+      hint:"问自己：这条控制是作用于「整个系统」还是「某一笔业务」？访问权限和变更管理影响所有应用，是典型通用控制。"
+    },
+    {
+      ch:2,
+      stem:"审计数据分析（Audit Data Analytics）在 CISA 知识体系中的定位，最准确的是：",
+      options:["独立于五个域之外的新设知识域","属于「信息系统审计过程」域中的审计技术手段","只适用于财务报表审计，不适用于 IT 审计","属于「信息资产保护」域的核心内容"],
+      answer:1,
+      explain:"2024 版大纲把数据分析作为信息系统审计过程（域 1）中的技术手段，用于测试、抽样与异常识别，并未单列为独立知识域。",
+      source:"S2 ISACA CISA ECO 2024", conf:"可信度：高",
+      hint:"2024 版仍然是五个域，没有第六域。数据分析被放在审计过程里，当作技术手段使用。"
+    }
+  ];
+
+  var CH_NAMES = ["第一章 · 审计准则与审计流程","第二章 · CPA《审计》科目框架","第三章 · CISA 与 IT / 数据审计"];
+  var CH_SHORT = ["第一章","第二章","第三章"];
+  var KEY_STORE = "auditquest_v1";
+
+  var state = { idx:0, picked:null, answered:false, answers:new Array(QUESTIONS.length).fill(null) };
+
+  function $(id){ return document.getElementById(id); }
+
+  function show(name){
+    ["home","quiz","result"].forEach(function(n){
+      $("screen-"+n).hidden = (n !== name);
+    });
+    window.scrollTo(0,0);
+  }
+
+  function loadStore(){
+    try{
+      var raw = localStorage.getItem(KEY_STORE);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+  function saveStore(obj){
+    try{ localStorage.setItem(KEY_STORE, JSON.stringify(obj)); }catch(e){}
+  }
+
+  function refreshBest(){
+    var s = loadStore();
+    $("best-score").textContent = (s && typeof s.best === "number") ? (s.best + " 分") : "—";
+  }
+
+  function startQuiz(){
+    state = { idx:0, picked:null, answered:false, answers:new Array(QUESTIONS.length).fill(null) };
+    show("quiz");
+    renderQuestion();
+  }
+
+  function renderQuestion(){
+    var q = QUESTIONS[state.idx];
+    state.picked = null;
+    state.answered = false;
+
+    $("bar").style.width = (state.idx / QUESTIONS.length * 100) + "%";
+    $("counter").textContent = (state.idx + 1) + " / " + QUESTIONS.length;
+    $("q-chapter").textContent = CH_SHORT[q.ch];
+    $("q-chapter-name").textContent = CH_NAMES[q.ch].split("· ")[1] || "";
+    $("q-stem").textContent = q.stem;
+
+    var box = $("opts");
+    box.innerHTML = "";
+    var letters = ["A","B","C","D"];
+    q.options.forEach(function(text, i){
+      var b = document.createElement("button");
+      b.className = "opt";
+      b.type = "button";
+      b.dataset.i = String(i);
+      b.innerHTML = '<span class="key">' + letters[i] + '</span><span>' + text + '</span>';
+      b.addEventListener("click", function(){ pick(i); });
+      box.appendChild(b);
+    });
+
+    $("hintbox").hidden = true;
+    $("hint-text").textContent = "";
+    $("feedback").hidden = true;
+    $("btn-hint").disabled = false;
+    $("btn-hint").textContent = "本地提示";
+    $("btn-submit").hidden = false;
+    $("btn-submit").disabled = true;
+    $("btn-next").hidden = true;
+  }
+
+  function pick(i){
+    if(state.answered) return;
+    state.picked = i;
+    var nodes = $("opts").children;
+    for(var k=0;k<nodes.length;k++){
+      nodes[k].classList.toggle("sel", k === i);
+    }
+    $("btn-submit").disabled = false;
+  }
+
+  function submitAnswer(){
+    if(state.picked === null || state.answered) return;
+    var q = QUESTIONS[state.idx];
+    state.answered = true;
+    state.answers[state.idx] = state.picked;
+
+    var nodes = $("opts").children;
+    for(var k=0;k<nodes.length;k++){
+      nodes[k].disabled = true;
+      nodes[k].classList.remove("sel");
+      if(k === q.answer) nodes[k].classList.add("correct");
+      if(k === state.picked && state.picked !== q.answer) nodes[k].classList.add("wrong");
+    }
+
+    var ok = state.picked === q.answer;
+    var fb = $("feedback");
+    fb.hidden = false;
+    fb.classList.toggle("bad", !ok);
+    $("verdict").textContent = ok ? "回答正确" : "回答错误 · 正确答案 " + ["A","B","C","D"][q.answer];
+    $("verdict").className = "verdict " + (ok ? "ok" : "no");
+    $("explain").textContent = q.explain;
+    $("src-tag").textContent = "来源 " + q.source;
+    $("conf-tag").textContent = q.conf;
+
+    $("btn-hint").disabled = true;
+    $("btn-submit").hidden = true;
+    $("btn-next").hidden = false;
+    $("btn-next").textContent = (state.idx === QUESTIONS.length - 1) ? "查看成绩" : "下一题";
+  }
+
+  function nextQuestion(){
+    if(state.idx >= QUESTIONS.length - 1){ finish(); return; }
+    state.idx += 1;
+    renderQuestion();
+  }
+
+  function finish(){
+    var correct = 0;
+    for(var i=0;i<QUESTIONS.length;i++){
+      if(state.answers[i] === QUESTIONS[i].answer) correct++;
+    }
+    var score = Math.round(correct / QUESTIONS.length * 100);
+    var lv = score >= 85 ? 2 : (score >= 60 ? 1 : 0);
+    var lvName = ["入门","达标","熟练"][lv];
+
+    $("bar").style.width = "100%";
+    $("score").innerHTML = score + '<span>分</span>';
+    $("level").textContent = lvName;
+    $("level").className = "level l" + lv;
+    $("correct-line").textContent = "答对 " + correct + " / " + QUESTIONS.length + " 题 · " + new Date().toLocaleDateString("zh-CN") + " 完成";
+
+    // 分章统计
+    var chStats = [0,1,2].map(function(c){
+      var idxs = [], right = 0;
+      QUESTIONS.forEach(function(q,i){
+        if(q.ch !== c) return;
+        idxs.push(i);
+        if(state.answers[i] === q.answer) right++;
+      });
+      return { total: idxs.length, right: right, pct: Math.round(right / idxs.length * 100) };
+    });
+
+    var block = $("chblock");
+    block.innerHTML = "";
+    ["审计准则与流程","CPA《审计》框架","CISA 与 IT 审计"].forEach(function(name, c){
+      var s = chStats[c];
+      var row = document.createElement("div");
+      row.className = "chrow";
+      row.innerHTML =
+        '<span class="name">' + name + '</span>' +
+        '<span class="track"><i class="' + (s.pct < 60 ? "low" : "") + '" style="width:' + s.pct + '%"></i></span>' +
+        '<span class="pct">' + s.pct + '%</span>';
+      block.appendChild(row);
+    });
+
+    // 建议
+    var minPct = Math.min.apply(null, chStats.map(function(s){ return s.pct; }));
+    var weak = [];
+    chStats.forEach(function(s,c){ if(s.pct === minPct) weak.push(["审计准则与流程","CPA《审计》框架","CISA 与 IT 审计"][c]); });
+
+    var advice = "";
+    if(score >= 85){
+      advice = "<b>框架已成型。</b>三章识记层面没有明显短板，下一步该做的是把「知道」变成「会用」：拿一份真实财务数据做借贷平衡校验与不匹配项查询，把准则条目对应到具体审计程序。";
+    }else if(score >= 60){
+      advice = "<b>框架基本掌握，仍有短板。</b>当前最薄弱的是<span class='k'>" + weak.join("、") + "</span>。建议回到题库清单，只看该章的准则编号 / 域权重对应表，先记结构再记细节。";
+    }else{
+      advice = "<b>框架尚未成型。</b>不必急着刷题——先建立三张表：准则编号与名称对照表、审计流程五阶段表、CISA 五域权重表。结构记住后，本套题的正确率会自然上来。";
+    }
+    advice += "<br><br>全部题目依据见《题库与官方来源清单》，每题标注来源编号（S1–S7）与可信度。";
+    $("advice").innerHTML = advice;
+
+    // 存档
+    var store = loadStore() || {};
+    var prevBest = typeof store.best === "number" ? store.best : -1;
+    saveStore({
+      best: Math.max(prevBest, score),
+      last: {
+        score: score, level: lvName, correct: correct,
+        total: QUESTIONS.length,
+        chapters: chStats.map(function(s){ return s.pct; }),
+        date: new Date().toISOString().slice(0,10)
+      }
+    });
+    refreshBest();
+
+    show("result");
+  }
+
+  function showHint(){
+    var q = QUESTIONS[state.idx];
+    $("hint-text").textContent = q.hint;
+    $("hintbox").hidden = false;
+    $("btn-hint").disabled = true;
+    $("btn-hint").textContent = "提示已展开";
+  }
+
+  // 事件绑定
+  $("btn-start").addEventListener("click", startQuiz);
+  $("btn-submit").addEventListener("click", submitAnswer);
+  $("btn-next").addEventListener("click", nextQuestion);
+  $("btn-hint").addEventListener("click", showHint);
+  $("btn-quit").addEventListener("click", function(){
+    if(confirm("退出后本次作答不保存，确定返回首页？")) show("home");
+  });
+  $("btn-again").addEventListener("click", startQuiz);
+  $("btn-home").addEventListener("click", function(){ refreshBest(); show("home"); });
+  $("btn-print").addEventListener("click", function(){ window.print(); });
+
+  refreshBest();
+})();
+</script>
+</body>
+</html>
