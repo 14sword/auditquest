@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="账本有鬼：六卷三十题的情境化审计闯关，从签第一张底稿到在系统里翻出一笔拆单付款。含角色创建、案卷墙、错题本、结案证书，并可按成绩生成一份个人审计报告。单文件离线运行。">
+<meta name="description" content="账本有鬼：六卷三十题的情境化审计游戏，从签第一张底稿到在系统里翻出一笔拆单付款。含角色创建、案卷墙、错题本、结案证书，并可按成绩生成一份个人审计报告。单文件离线运行。">
 <title>账本有鬼｜一个案子，三十道程序</title>
 <style>
 :root{
@@ -373,7 +373,7 @@ h1,h2,h3,p{margin:0}
   <div class="topbar">
     <button class="brand" type="button" data-go="home"><span class="sq"></span>账本有鬼 <small>AUDIT QUEST</small></button>
     <div class="topnav">
-      <span class="seg"><span class="cur">闯关</span><a data-dash href="看板/审计数据分析看板.html">看板</a></span>
+      <span class="seg"><span class="cur">闯关</span><a data-dash href="报告/审计报告.html">报告</a></span>
       <span class="tagline">大数据审计 · 个人作业</span>
     </div>
   </div>
@@ -453,7 +453,7 @@ h1,h2,h3,p{margin:0}
           <li><code>S12</code> 财会〔2010〕11 号《应用指引第 9 号——销售业务》（高）</li>
           <li><code>S13</code> Nigrini《Benford's Law》2012，仅用首位期望公式与 2 个百分点阈值（中）</li>
         </ul>
-        <p style="font-size:11.5px;line-height:1.8">S1—S8 支撑 30 道题的命题；S9—S13 用于 <code>知识库/</code> 下六张卡片与看板口径，不新增题目。逐条原文链接与核验状态见《题库与官方来源清单》。</p>
+        <p style="font-size:11.5px;line-height:1.8">S1—S8 支撑 30 道题的命题；S9—S13 用于 <code>知识库/</code> 下七张卡片与报告口径，不新增题目。逐条原文链接与核验状态见《题库与官方来源清单》。</p>
         <h4>AI 使用说明（必读）</h4>
         <p>页面内的「本地提示」为预先写入的规则文本，按题号匹配显示，<b>不调用任何在线大模型</b>，页面不发起任何网络请求、不读取任何密钥。<span class="chipnote">本地规则提示 · 非在线大模型调用</span></p>
         <h4>设计参考声明</h4>
@@ -490,7 +490,7 @@ h1,h2,h3,p{margin:0}
       <div class="avatar-mini" id="map-avatar"></div>
       <h2 id="map-hello">案卷墙</h2>
       <div class="spacer"></div>
-      <a class="btn sm" data-dash href="看板/审计数据分析看板.html">数据看板</a>
+      <a class="btn sm" data-dash href="报告/审计报告.html">审计报告</a>
       <button class="btn sm" id="b-report">成绩报告</button>
     </div>
     <div class="maps" id="maps"></div>
@@ -576,7 +576,7 @@ h1,h2,h3,p{margin:0}
 
       <div class="note" id="r-advice"></div>
 
-      <a class="reportcta no-print" data-dash href="看板/审计数据分析看板.html">
+      <a class="reportcta no-print" data-dash href="报告/审计报告.html">
         <span class="rk">下一步</span>
         <span class="rt">生成我的审计报告
           <small>拿这一轮的正确率，重跑那 4,860 张发票</small></span>
@@ -714,7 +714,7 @@ h1,h2,h3,p{margin:0}
     {ch:3, scene:"周五 16:50 · 数据室",
      stem:"4,860 张发票，你想找出「同一个客户在同一天被拆成好几张、张张卡在 5 万以下」的情形。抽了 60 张，一张没碰上。问题出在哪？",
      options:["运气不好，再抽 60 张","抽样看的是单笔属性，而拆单是跨记录的「模式」，得靠全量规则筛查","应该直接问财务经理有没有拆单","拆单的每张金额都很小，本来就不用管"],answer:1,
-     explain:"拆单的特征不在单张金额上，而在「同一天 + 同一客户 + 多张」这个组合关系上。随机抽样时每张被抽中的概率相同，天然不适合发现跨记录模式。数据看板里那条 SQL 就是照这个思路写的：全量跑完命中 9 组、168.2 万元。",
+     explain:"拆单的特征不在单张金额上，而在「同一天 + 同一客户 + 多张」这个组合关系上。随机抽样时每张被抽中的概率相同，天然不适合发现跨记录模式。报告里那条 SQL 就是照这个思路写的：全量跑完命中 9 组、168.2 万元。",
      source:"S2（域 1 审计过程 · 数据分析技术）",conf:"可信度：高",
      hint:"抽样回答「这一笔对不对」，全量筛查回答「这批里有没有某种搭配」。拆单就是搭配。"},
 
@@ -1259,7 +1259,7 @@ h1,h2,h3,p{margin:0}
     }
     $("r-advice").innerHTML=adv;
 
-    /* 把这一轮的成绩与错题交给看板，生成个人审计报告 */
+    /* 把这一轮的成绩与错题交给报告页 */
     var wrongArr=[];
     QUESTIONS.forEach(function(q,i){
       if(state.answers[i]===null || state.answers[i]===q.answer) return;
@@ -1280,7 +1280,7 @@ h1,h2,h3,p{margin:0}
     /* 离线（file://）下两个文件不共享 localStorage，成绩改用 URL 参数带过去 */
     var cta=document.querySelector(".reportcta");
     if(cta){
-      var base=cta.getAttribute("href") || "看板/审计数据分析看板.html";
+      var base=cta.getAttribute("href") || "报告/审计报告.html";
       var sep=base.indexOf("?")>=0 ? "&" : "?";
       cta.setAttribute("href", base + sep +
         "r="+t.score +
@@ -1343,7 +1343,7 @@ h1,h2,h3,p{margin:0}
     renderMap(); show("map");
   });
   $("b-print").addEventListener("click",function(){ window.print(); });
-  /* ---------- 首页角色格 / 继续闯关 / 看板互链 ---------- */
+  /* ---------- 首页角色格 / 继续闯关 / 报告互链 ---------- */
   Array.prototype.forEach.call(document.querySelectorAll(".pane"),function(p){
     var i=+p.getAttribute("data-role"), art=p.querySelector(".art");
     if(art && ROLES[i]) art.innerHTML=ROLES[i].svg;
@@ -1367,7 +1367,7 @@ h1,h2,h3,p{margin:0}
   });
   (function(){
     var to = (location.protocol==="file:")
-      ? "看板/审计数据分析看板.html"
+      ? "报告/审计报告.html"
       : "dashboard.html" + location.search;
     Array.prototype.forEach.call(document.querySelectorAll("[data-dash]"),function(a){
       a.setAttribute("href",to);
@@ -1381,7 +1381,7 @@ h1,h2,h3,p{margin:0}
     });
   });
 
-  /* ---------- 深链：从数据看板跳回某一章（?ch=4） ---------- */
+  /* ---------- 深链：从报告跳回某一章（?ch=4） ---------- */
   (function(){
     var m=/[?&]ch=(\d{1,2})/.exec(location.search);
     if(!m) return;
@@ -1394,7 +1394,7 @@ h1,h2,h3,p{margin:0}
     }else{
       PENDING=idx; openSetup();
       var dl=$("deepline");
-      dl.textContent="从数据看板过来的：填个名字，直接进第 "+(idx+1)+" 章「"+CHS[idx].n+"」。";
+      dl.textContent="从报告过来的：填个名字，直接进第 "+(idx+1)+" 章「"+CHS[idx].n+"」。";
       dl.hidden=false;
     }
   })();
