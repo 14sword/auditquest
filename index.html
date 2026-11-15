@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="审计闯关 AuditQuest：三章十二题的审计知识闯关，含角色创建、章节地图、错题本与通关证书。单文件离线运行，无网络请求。">
+<meta name="description" content="审计闯关 AuditQuest：五章二十五题的情境化审计知识闯关，含角色创建、案卷地图、错题本与通关证书。单文件离线运行，无网络请求。">
 <title>审计闯关 · AuditQuest｜个人作业版</title>
 <style>
 :root{
@@ -139,29 +139,54 @@ h1,h2,h3,p{margin:0}
 .avatar-mini svg{width:100%;height:100%}
 .err{color:var(--red);font-size:11.5px;font-weight:700;margin-top:8px}
 
-/* 章节地图 */
+/* 章节地图 · 案卷墙 */
 #s-map{min-height:calc(100vh - 120px);display:flex;flex-direction:column;justify-content:center}
 .maps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.mapcard{padding:20px 18px;display:flex;flex-direction:column;gap:10px;position:relative;min-height:252px;overflow:hidden}
-.mapcard .wm{position:absolute;right:10px;top:40px;font-size:78px;font-weight:900;letter-spacing:-6px;
-  line-height:1;color:rgba(20,17,14,.055);pointer-events:none;user-select:none}
-.mapcard .idx{font-size:11px;font-weight:900;letter-spacing:2px;color:var(--ink2)}
-.mapcard h3{font-size:17px;font-weight:900;line-height:1.3}
-.mapcard .d{font-size:11.5px;color:var(--ink2);line-height:1.6;flex:1}
-.stamp{align-self:flex-start;font-size:11px;font-weight:900;padding:3px 10px;border:2.5px solid var(--ink);border-radius:999px;background:#fff}
-.stamp.done{background:var(--green);color:#fff}
-.stamp.doing{background:var(--amber)}
-.mapcard .go{width:100%}
+.case{position:relative;border:3px solid var(--ink);border-radius:10px;overflow:hidden;
+  display:flex;flex-direction:column;min-height:214px;background:var(--cc,#e9e2d2);
+  box-shadow:5px 5px 0 var(--ink);text-align:left;padding:0;color:var(--ink);
+  animation:paneIn .5s cubic-bezier(.2,.9,.3,1.3) both;animation-delay:calc(var(--i,0)*70ms);
+  transition:transform .16s,box-shadow .16s}
+.case.open{cursor:pointer}
+.case.open:hover{transform:translate(-2px,-3px);box-shadow:7px 8px 0 var(--ink)}
+.case.open:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.case .top{position:relative;flex:1;min-height:152px;overflow:hidden}
+.case .top::before{content:"";position:absolute;inset:0;
+  background-image:radial-gradient(currentColor 1.6px,transparent 1.7px);background-size:9px 9px;opacity:.12}
+.case .top svg{position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);width:100%;height:100%;display:block}
+.case .no{position:absolute;top:9px;left:9px;z-index:4;width:30px;height:30px;border-radius:50%;
+  border:2.5px solid var(--ink);background:var(--paper2);display:grid;place-items:center;
+  font-weight:900;font-size:13.5px;box-shadow:2px 2px 0 var(--ink);transform:rotate(-7deg)}
+.case .bar{background:var(--ink);color:var(--paper2);padding:8px 12px 9px;display:flex;align-items:center;
+  justify-content:space-between;gap:8px;border-top:3px solid var(--ink);position:relative;z-index:4}
+.case .bar b{display:block;font-size:13px;font-weight:900;line-height:1.25;letter-spacing:.2px}
+.case .bar span{display:block;font-size:9.5px;font-weight:700;opacity:.72;letter-spacing:.4px;margin-top:1px}
+.case .bar em{font-style:normal;font-size:9.5px;font-weight:900;letter-spacing:1px;opacity:.82;white-space:nowrap}
+.case.boss{--cc:#8f2c22}
+.case.boss .bar{background:#8f2c22}
+.case.locked{cursor:not-allowed}
+.case.locked .top::after{content:"";position:absolute;inset:0;background:rgba(20,17,14,.52);z-index:2}
+.case.locked .top svg{filter:grayscale(1) brightness(.75)}
+.case .top svg.lock{position:absolute;left:50%;top:50%;transform:translate(-50%,-46%);z-index:3;
+  width:42px;height:42px;padding:9px;box-sizing:border-box;border-radius:50%;
+  background:rgba(20,17,14,.62);border:2px solid rgba(250,247,239,.5);filter:none;
+  animation:floaty 3.6s ease-in-out infinite}
+.seal-ok{position:absolute;top:8px;right:8px;z-index:5;border:2.5px solid var(--ink);color:#fff7f2;
+  border-radius:5px;padding:2px 7px;font-size:9.5px;font-weight:900;letter-spacing:1px;
+  background:var(--red);transform:rotate(-9deg);box-shadow:2px 2px 0 rgba(20,17,14,.45);
+  animation:stampIn .45s cubic-bezier(.2,.9,.3,1.4) both}
+.mini{display:none}
 
 /* 答题 */
 .progressline{display:flex;align-items:center;gap:12px;margin:0 0 16px}
-.pbar{flex:1;height:12px;border:2.5px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden}
+.pbar{flex:1;height:12px;border:2.5px solid var(--ink);border-radius:999px;background:#e6dfce;overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--amber);width:0;transition:width .3s}
 .qcount{font-size:11.5px;font-weight:900;letter-spacing:1px;white-space:nowrap}
 .qcard{padding:26px 26px}
 #s-quiz{min-height:calc(100vh - 96px);display:flex;flex-direction:column;justify-content:center}
 #s-quiz .screenhead,#s-quiz .qcard{max-width:820px;width:100%;margin-left:auto;margin-right:auto}
 .qtag{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:1.4px;padding:3px 9px;border:2.5px solid var(--ink);border-radius:999px;background:var(--amber);margin-bottom:12px}
+.qscene{font-size:10.5px;font-weight:800;letter-spacing:1.5px;color:var(--ink2);margin-bottom:5px}
 .qstem{font-size:clamp(16px,2vw,20px);font-weight:900;line-height:1.55;letter-spacing:-.3px;margin-bottom:20px}
 .opts{display:flex;flex-direction:column;gap:9px}
 .opt{display:flex;align-items:flex-start;gap:12px;text-align:left;width:100%;
@@ -253,10 +278,13 @@ h1,h2,h3,p{margin:0}
   .comic{grid-template-columns:1fr 1fr;grid-template-rows:none;min-height:0}
   .pane{min-height:210px}
   .hero{grid-column:1 / -1;grid-row:auto;order:-1;padding:28px 18px}
-  .maps{grid-template-columns:1fr}
+  .maps{grid-template-columns:1fr 1fr}
   .roles{grid-template-columns:1fr 1fr}
   .scoreband{grid-template-columns:1fr}
   .scoreband .left{border-right:none;border-bottom:3px solid var(--ink)}
+}
+@media (max-width:620px){
+  .maps{grid-template-columns:1fr}
 }
 @media print{
   body{background:#fff;background-image:none}
@@ -291,7 +319,7 @@ h1,h2,h3,p{margin:0}
         <div class="kicker">审计学 · 课程实践</div>
         <h1 class="ttl"><span style="--d:0">审</span><span style="--d:1">计</span><span style="--d:2">闯</span><span style="--d:3">关</span></h1>
         <div class="en">AUDIT QUEST</div>
-        <p class="sub">准则怎么编号、风险在哪一步评估、CISA 五域各占几分。<br>三章十二题走一遍，答错当场有解析。</p>
+        <p class="sub">从签第一张底稿，到在系统里翻出一笔拆单付款。<br>五章二十五题，每道都是一段现场，答错当场给解析。</p>
         <button class="btn main" id="b-start">开始闯关</button>
         <div class="hbtns">
           <button class="btn sm ghost" id="b-continue">继续闯关</button>
@@ -358,7 +386,7 @@ h1,h2,h3,p{margin:0}
         <label>选择身份</label>
         <div class="roles" id="roles"></div>
       </div>
-      <button class="btn block" id="b-enter">进入章节地图</button>
+      <button class="btn block" id="b-enter">进入案卷墙</button>
     </div>
   </section>
 
@@ -367,24 +395,25 @@ h1,h2,h3,p{margin:0}
     <div class="screenhead">
       <button class="btn sm ghost" data-go="home">← 主菜单</button>
       <div class="avatar-mini" id="map-avatar"></div>
-      <h2 id="map-hello">章节地图</h2>
+      <h2 id="map-hello">案卷墙</h2>
       <div class="spacer"></div>
       <button class="btn sm" id="b-report">查看成绩报告</button>
     </div>
     <div class="maps" id="maps"></div>
     <div class="advice" style="margin-top:16px">
-      <b>怎么玩：</b>三章各 4 题，进入一章答完 4 题即出本章结算，回到地图继续下一章。全部答完后可查看总成绩与通关证书。答错的题会自动进错题本。
+      <b>怎么玩：</b>五章各自独立，点开就能进，每章 4 题。章内答完即出本章结算，正确率 100% 会在卡上盖「已结案」章。<b>综合卷</b>要等前五章都过一遍才解锁，5 道跨章题，考的是能不能把零散知识点串成一个案子。答错的题自动进错题本。
     </div>
   </section>
 
   <!-- ================= 答题 ================= -->
   <section id="s-quiz" hidden>
     <div class="screenhead">
-      <button class="btn sm ghost" id="b-quit">← 章节地图</button>
+      <button class="btn sm ghost" id="b-quit">← 案卷墙</button>
       <div class="spacer"></div>
       <div class="qcount" id="qcount">1 / 4</div>
     </div>
     <div class="qcard panel">
+      <div class="qscene" id="qscene"></div>
       <div class="qtag" id="qtag">第一章</div>
       <div class="progressline"><div class="pbar"><i id="pbar"></i></div></div>
       <div class="qstem" id="qstem"></div>
@@ -418,7 +447,7 @@ h1,h2,h3,p{margin:0}
       <div class="lv" id="end-lv">入门</div>
       <div class="detail" id="end-detail"></div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn ghost" id="b-backmap">回章节地图</button>
+        <button class="btn ghost" id="b-backmap">回案卷墙</button>
         <button class="btn" id="b-nextch">下一章</button>
       </div>
     </div>
@@ -427,7 +456,7 @@ h1,h2,h3,p{margin:0}
   <!-- ================= 成绩报告 ================= -->
   <section id="s-result" hidden>
     <div class="screenhead no-print">
-      <button class="btn sm ghost" data-go="map">← 章节地图</button>
+      <button class="btn sm ghost" data-go="map">← 案卷墙</button>
       <div class="spacer"></div>
       <button class="btn sm" id="b-wrong2">错题本</button>
     </div>
@@ -446,7 +475,7 @@ h1,h2,h3,p{margin:0}
         <h3>通 关 证 书</h3>
         <div class="body">
           兹证明 <b id="c-name">同学</b> 已完成<br>
-          《审计闯关》三章十二题（审计准则 · CPA 审计框架 · CISA 五域）<br>
+          《审计闯关》五章正卷与综合卷，共 25 题<br>
           成绩 <b id="c-score">0</b> 分，评定等级 <b id="c-level">入门</b>
         </div>
         <div class="meta">
@@ -484,82 +513,266 @@ h1,h2,h3,p{margin:0}
   "use strict";
 
   var QUESTIONS = [
-    {ch:0,stem:"我国注册会计师执业准则体系中，专门规范「审计工作底稿」的准则是：",
-     options:["CSA 1121","CSA 1131","CSA 1211","CSA 1301"],answer:1,
-     explain:"CSA 1131《审计工作底稿》规范底稿的编制、复核与归档保管。CSA 1121 是质量管理，CSA 1211 是重大错报风险的识别和评估，CSA 1301 是审计证据。",
+    /* ---------- 第一章 · 准则与底稿 ---------- */
+    {ch:0, scene:"周五 17:40 · 档案室",
+     stem:"报告签出去第 58 天，你抱着最后一批底稿去做归档。合伙人叮嘱：归完档就别再往里塞东西了。这条规矩写在哪个准则里？",
+     options:["CSA 1121 质量管理","CSA 1131 审计工作底稿","CSA 1211 重大错报风险的识别和评估","CSA 1301 审计证据"],answer:1,
+     explain:"CSA 1131《审计工作底稿》管的是底稿的编制、复核与归档：事务所应在审计报告日起 60 天内完成归档，归档后不得在保存期内删除或废弃。1121 是项目层面质量管理，1211 是风险评估，1301 是审计证据。",
      source:"S4 中注协执业准则目录",conf:"可信度：高",
-     hint:"先排除 1211（风险评估）与 1301（审计证据），剩下两个里，1121 属于质量管理层面，1131 才是具体规范底稿的那一项。"},
-    {ch:0,stem:"「重大错报风险的识别和评估」对应的具体审计准则是：",
-     options:["CSA 1201","CSA 1211","CSA 1231","CSA 1313"],answer:1,
-     explain:"CSA 1211 规范重大错报风险的识别和评估；CSA 1231 是「针对评估的重大错报风险采取的应对措施」；CSA 1201 是计划审计工作；CSA 1313 是分析程序。",
+     hint:"四个编号里，只有 1131 的名字直接叫「审计工作底稿」。别被 1121 的「管理」二字带偏——那是管项目质量，不是管纸。"},
+
+    {ch:0, scene:"周一 09:10 · 客户会议室",
+     stem:"新接一家做跨境电商的客户：仓库在海外，退货率高得离谱，收款走三个第三方平台。合伙人让你先摸清它怎么赚钱、哪一步容易出错。这一步对应哪条准则？",
+     options:["CSA 1201 计划审计工作","CSA 1231 针对评估的重大错报风险采取的应对措施","CSA 1211 重大错报风险的识别和评估","CSA 1313 分析程序"],answer:2,
+     explain:"了解被审计单位及其环境、识别和评估重大错报风险，是 CSA 1211 的规范对象。CSA 1231 管的是「评估完之后怎么应对」，方向和它相反；1201 管的是总体计划与时间安排。",
      source:"S4 中注协执业准则目录",conf:"可信度：高",
-     hint:"注意 1231 是「应对措施」，方向与「识别和评估」相反；1201 是计划审计工作。别被编号顺序带偏。"},
-    {ch:0,stem:"《中华人民共和国国家审计准则》的制定与发布主体是：",
+     hint:"题干里是「摸清、判断哪里可能出错」，这是评估。应对发生在评估之后，别把顺序弄反。"},
+
+    {ch:0, scene:"周三 15:00 · 市审计局",
+     stem:"表哥在市审计局做审计，你问他平时依据什么干活。他说是《中华人民共和国国家审计准则》。这套准则由谁制定、以谁的名义发布？",
      options:["财政部","中国注册会计师协会","审计署","国务院"],answer:2,
-     explain:"国家审计准则由审计署制定并以审计署令发布（审计署令第 8 号，2010 年公布、2011 年 1 月 1 日施行），规范审计机关和审计人员执行审计业务的行为。注册会计师执业准则则由中注协制定。",
+     explain:"国家审计准则由审计署制定、以审计署令发布（第 8 号，2011 年 1 月 1 日施行），约束审计机关和审计人员。管注册会计师的那套执业准则，才由中注协制定。",
      source:"S5 审计署《国家审计准则》",conf:"可信度：高",
-     hint:"区分两套体系：管注册会计师的是中注协，管审计机关和审计人员的是审计署。题目问的是后者。"},
-    {ch:0,stem:"审计业务流程中，「了解被审计单位及其环境、识别和评估重大错报风险」属于哪个环节：",
-     options:["接受业务委托与计划审计工作","实施进一步审计程序","完成审计工作","出具审计报告"],answer:0,
-     explain:"风险导向审计下，了解被审计单位及其环境、识别和评估重大错报风险是计划阶段的核心工作（CSA 1201、CSA 1211）；之后才针对评估的风险设计和实施进一步审计程序（CSA 1231）。",
-     source:"S4 中注协执业准则目录",conf:"可信度：高",
-     hint:"风险导向的顺序是「先评估、再应对」。了解被审计单位及其环境属于评估环节，发生在前，不可能是应对阶段。"},
+     hint:"记住两条线：管会计师事务所的是中注协，管审计机关和审计人员的是审计署。题干里是审计局。"},
 
-    {ch:1,stem:"现行注册会计师考试《审计》科目所采用的主线是：",
-     options:["以账户余额为主的详细审计","风险导向审计","以税务合规为主线的审计","以凭证抽查为主线的审计"],answer:1,
-     explain:"现行《审计》大纲与教材以风险导向审计为主线组织内容：风险评估 → 风险应对 → 完成审计工作与出具审计报告。",
-     source:"S1 中注协 2026 年《审计》考试大纲",conf:"可信度：中",
-     hint:"教材的章节顺序就是线索：先讲风险评估，再讲风险应对，最后讲报告。这条线叫风险导向。"},
-    {ch:1,stem:"下列工作属于「完成审计工作与出具审计报告」阶段的是：",
-     options:["了解被审计单位的内部控制","确定财务报表整体重要性水平","评价审计证据的充分性和适当性并形成审计意见","实施控制测试"],answer:2,
-     explain:"了解内控、确定重要性属计划与风险评估阶段；控制测试属风险应对阶段；评价证据的充分性和适当性、形成审计意见，才是完成阶段的核心工作，随后按 CSA 1501 出具报告。",
-     source:"S1 大纲 + S4 准则目录",conf:"可信度：中",
-     hint:"按阶段归类：了解内控、定重要性都在前面；控制测试属于应对；只有「评价证据、形成意见」发生在收尾。"},
-    {ch:1,stem:"关于内部控制审计与财务报表审计的关系，正确的是：",
-     options:["两者必须由不同会计师事务所分别执行","两者可以整合进行，共享部分了解与测试工作","内部控制审计不属于鉴证业务","财务报表审计无需关注内部控制"],answer:1,
-     explain:"整合审计是实务通行做法：两者目标不同，但可共享风险评估与了解内部控制的工作成果。内部控制审计属于鉴证业务；财务报表审计必须了解内部控制以识别和评估重大错报风险。",
-     source:"S1 大纲 + S4 准则目录",conf:"可信度：中",
-     hint:"关键词是「共享工作、目标不同」。两者既不是排他关系，也不是可以互不理会。"},
-    {ch:1,stem:"规范「对财务报表审计实施的质量管理」（项目层面质量管理）的准则是：",
-     options:["CSA 1101","CSA 1121","CSA 1131","CSA 1501"],answer:1,
-     explain:"CSA 1121《对财务报表审计实施的质量管理》规范项目层面的质量管理；CSA 1101 是注册会计师的总体目标；CSA 1131 是审计工作底稿；CSA 1501 是对财务报表形成审计意见和出具审计报告。",
+    {ch:0, scene:"周四 23:15 · 酒店房间",
+     stem:"外勤最后一晚，你在整理银行询证函，三封没回函，得挨个追。发函、收函、追函这一整段工作，落在风险导向审计的哪一步？",
+     options:["计划审计工作","风险评估","完成审计工作","风险应对（实施进一步审计程序）"],answer:3,
+     explain:"函证是实质性程序的一种，属于针对评估出的重大错报风险实施的进一步审计程序，落在风险应对阶段。计划阶段定方案，完成阶段评价证据、形成意见，都不负责「去拿证据」。",
      source:"S4 中注协执业准则目录",conf:"可信度：高",
-     hint:"1101 是总体目标，别混。质量管理对应 1121，底稿是 1131，报告是 1501。"},
+     hint:"顺序是「评估风险，再应对风险」。函证是拿证据验证认定，属于应对。"},
 
-    {ch:2,stem:"ISACA CISA 考试内容大纲（2024 版）中，权重为 12% 的知识域是：",
-     options:["信息系统审计过程","IT 治理与管理","信息系统的获取、开发与实施","信息资产的保护"],answer:2,
-     explain:"2024 版五域权重为：信息系统审计过程 18%、IT 治理与管理 18%、信息系统的获取开发与实施 12%、信息系统运行与业务韧性 26%、信息资产保护 26%。",
+    /* ---------- 第二章 · 风险与重要性 ---------- */
+    {ch:1, scene:"周二 10:30 · 项目组讨论",
+     stem:"营业收入 10 亿、净利润 5000 万，你按 5% 定了 250 万的重要性水平。经理问你：重要性定了是不是就不能动了？",
+     options:["是，必须在计划阶段锁定，全程不得调整","是，中途改动会让报告失去可比性","不是，情况变化时可以修订，比如中途发现重大资产减值","不是，重要性只在出具报告那一刻才需要确定"],answer:2,
+     explain:"重要性是财务报表中错报的「容忍上限」，超过就可能改变使用者的决策。它是职业判断的产物，审计过程中出现新情况（重大重组、重大减值、监管处罚）就应当修订，修订的理由要记录。金额之外还要看性质：舞弊、关联方交易，金额很小也可能是重要的。",
+     source:"S1 大纲 + S4 准则目录",conf:"可信度：中",
+     hint:"关键词是「职业判断」。判断会随证据更新，但修订必须留痕。"},
+
+    {ch:1, scene:"周一 14:00 · 采购部",
+     stem:"翻采购流程时你发现：同一个人既下订单、又收货验收、还在系统里点付款审批。用舞弊三角看，这个安排主要放大了哪个要素？",
+     options:["机会","压力","借口（自我合理化）","与舞弊三角无关"],answer:0,
+     explain:"压力、机会、借口三要素里，「一个人把不相容的活全干了」拆掉的是相互牵制，直接制造机会。这也是为什么职责分离是所有控制的底盘。",
+     source:"S1 大纲（舞弊风险相关章节）",conf:"可信度：中",
+     hint:"判断口径：这个安排让舞弊「更容易发生」，还是让想舞弊的人「更想干」？前者是机会。"},
+
+    {ch:1, scene:"周三 16:20 · 财务部",
+     stem:"「采购订单必须经部门经理审批」这条控制，你想知道它这一年是不是真的在执行。最直接的做法是？",
+     options:["跟着一笔订单走完全流程，看一遍","抽样检查全年订单的审批签字与系统审批记录","对采购总额做分析程序，看波动是否异常","向主要供应商发函确认全年采购金额"],answer:1,
+     explain:"控制测试测的是「控制运行的有效性」，要覆盖整个期间、取够样本。跟着一笔走完流程（穿行测试）只是确认你对流程的理解对不对，样本量撑不起「一贯执行」的结论。分析程序和函证是实质性程序，回答的是金额对不对，不是控制跑没跑。",
+     source:"S4（CSA 1231）+ S1 大纲",conf:"可信度：中",
+     hint:"一句话分开：控制测试问「这条控制有没有一直生效」，实质性程序问「这个数字对不对」。"},
+
+    {ch:1, scene:"周二 09:40 · 会议室",
+     stem:"下面哪一项不属于风险评估程序？",
+     options:["询问管理层和内部其他人员","实施分析程序","观察和检查","向银行函证借款余额"],answer:3,
+     explain:"风险评估程序主要是三类：询问、分析程序、观察和检查，目的是了解被审计单位及其环境。函证是获取外部证据的实质性程序，属于风险应对——那一步已经在验证金额了，不是用来「了解」的。",
+     source:"S1 大纲 + S4（CSA 1211）",conf:"可信度：中",
+     hint:"风险评估阶段还没开始验证金额。函证已经在验证金额了，所以它不在这个阶段。"},
+
+    /* ---------- 第三章 · 证据与程序 ---------- */
+    {ch:2, scene:"周五 11:00 · 银行柜台",
+     stem:"客户在某银行只有一个账户，年末余额 8 万元，占资产总额 0.01%。项目组说金额太小，不函证了。这个判断站得住吗？",
+     options:["站得住，低于重要性水平就可以不函证","站得住，有银行对账单和余额调节表就够了","站不住，银行存款原则上应函证，除非该账户对报表不重要且相关重大错报风险很低","站不住，所有银行账户都必须 100% 函证，没有例外"],answer:2,
+     explain:"CSA 1312《函证》要求对银行存款、借款及与金融机构往来的其他重要信息实施函证，除非有充分证据表明其对财务报表不重要、且与之相关的重大错报风险很低——两个条件要同时满足。金额小不等于风险低：这个账户可能被用来走资金，也可能藏着未入账的借款。",
+     source:"S4（CSA 1312 函证）",conf:"可信度：高",
+     hint:"准则给的是「两个条件同时满足」的例外，不是一个金额门槛。金额小和风险低，是两件事。"},
+
+    {ch:2, scene:"12 月 31 日 20:00 · 仓库",
+     stem:"年末存货盘点，仓库主管带人清点，你拿着盘点表在旁边走来走去。这个场景里，你的活儿到底是什么？",
+     options:["亲自清点全部存货，重编一张盘点表","观察管理层的盘点过程并实施抽盘，核对盘点记录与实物","把盘点表收回来存档就行，不必到场","存货占比不高，整个环节可以跳过"],answer:1,
+     explain:"盘点是被审计单位的责任，审计人员做的是「监盘」：观察盘点过程、检查盘点记录、实施抽盘、关注毁损与呆滞。责任主体不能混——混了就成了自己审自己。",
+     source:"S4（CSA 1311 存货监盘）",conf:"可信度：高",
+     hint:"「监盘」的监是监督的监。别人盘，你看、你抽、你记。"},
+
+    {ch:2, scene:"周三 21:00 · 数据室",
+     stem:"一家服装企业，收入只涨了 3%，毛利率却从 32% 跳到 51%。你把这个数字圈了出来，然后呢？",
+     options:["直接出具无法表示意见","认定是经营改善，不必追加程序","要求客户按同业水平调账","当作风险线索，追问原因并设计针对性程序——查成本结转、做收入截止测试"],answer:3,
+     explain:"分析程序发现的是「异常关系」，它本身不是结论。毛利率跳升要么来自产品结构变化，要么来自成本少结转、收入提前确认。先问清业务解释，再用细节测试验证，最后才谈定性。",
+     source:"S4（CSA 1313 分析程序）",conf:"可信度：高",
+     hint:"异常数字是线索，不是判决书。顺序永远是：先解释，再验证。"},
+
+    {ch:2, scene:"周四 10:20 · 会议室",
+     stem:"关于审计证据，下面哪句话是对的？",
+     options:["充分性说的是数量，适当性说的是相关性和可靠性","证据数量越多，质量一定越高","复印件通常比原件更可靠","有了管理层声明书，其他证据可以省掉"],answer:0,
+     explain:"充分性＝数量够不够，适当性＝相关不相关、可靠不可靠。可靠性排序：外部独立来源优于内部证据，原件优于复印件，审计人员直接获取优于间接获得。管理层声明是必要证据，但替代不了其他证据。",
+     source:"S4（CSA 1301 审计证据）",conf:"可信度：高",
+     hint:"把两个词拆开记：充分＝够多，适当＝对口且可信。数量和质量的混用，正是这条最常见的错。"},
+
+    /* ---------- 第四章 · IT 与数据 ---------- */
+    {ch:3, scene:"周二 15:40 · 机房",
+     stem:"客户的报销系统上线半年。你发现任何登录的人都能改历史报销单的金额，改完还不留痕迹。这属于什么层面的问题？",
+     options:["应用控制里的一个单点缺陷","操作习惯问题，不算控制缺陷","通用控制（ITGC）缺陷，落在访问控制与日志机制上","与审计无关，属于人事管理"],answer:2,
+     explain:"ITGC 作用于整个系统环境——访问控制、变更管理、运行与备份、职责分离。谁都能改历史数据、改完不留痕，说明权限设计和日志机制同时失效，影响的是所有依赖这套系统的应用，属通用控制缺陷。",
+     source:"S2 CISA ECO 2024（域 4 / 域 5）",conf:"可信度：高",
+     hint:"判断口径：这条控制影响「整个系统」还是「某一笔业务」？影响全系统的，是 ITGC。"},
+
+    {ch:3, scene:"周一 20:00 · 自习室",
+     stem:"CISA 2024 版五个知识域里，权重最高、加起来占了 52% 的是哪两个？",
+     options:["域 1 与域 2","域 2 与域 3","域 1 与域 5","域 4 与域 5"],answer:3,
+     explain:"五域权重是 18 / 18 / 12 / 26 / 26。域 4「信息系统运行与业务韧性」和域 5「信息资产保护」各 26%，合计 52%。唯一那个 12% 是域 3「信息系统的获取、开发与实施」。",
      source:"S2 ISACA CISA ECO 2024",conf:"可信度：高",
-     hint:"五域里只有一个 12%，就是「获取、开发与实施」——它范围最窄，权重最低。另两个 18%，两个 26%。"},
-    {ch:2,stem:"CISA 五个知识域中，权重合计达到 52% 的两个域是：",
-     options:["域 1 与域 2","域 2 与域 3","域 4 与域 5","域 1 与域 5"],answer:2,
-     explain:"域 4「信息系统运行与业务韧性」26% + 域 5「信息资产保护」26% = 52%，是五个域中权重最高的两块，也是考试重点。",
-     source:"S2 ISACA CISA ECO 2024",conf:"可信度：高",
-     hint:"算一下：只有 26% + 26% 能凑到 52%。找那两个 26% 的域——运行与业务韧性、信息资产保护。"},
-    {ch:2,stem:"在 IT 审计中，下列属于「通用控制（General Controls）」的是：",
-     options:["输入字段的格式校验","用户访问权限管理与变更管理","单笔交易的金额上限校验","凭证借贷平衡校验"],answer:1,
-     explain:"通用控制作用于整个信息系统环境（访问控制、变更管理、运行与备份、职责分离等），影响所有应用；其余三项属应用控制，作用于具体业务流程。",
-     source:"S2 ISACA CISA ECO 2024 域 4 / 域 5",conf:"可信度：高",
-     hint:"问自己：这条控制是作用于「整个系统」还是「某一笔业务」？访问权限和变更管理影响所有应用，是典型通用控制。"},
-    {ch:2,stem:"审计数据分析（Audit Data Analytics）在 CISA 知识体系中的定位，最准确的是：",
-     options:["独立于五个域之外的新设知识域","属于「信息系统审计过程」域中的审计技术手段","只适用于财务报表审计，不适用于 IT 审计","属于「信息资产保护」域的核心内容"],answer:1,
-     explain:"2024 版大纲把数据分析作为信息系统审计过程（域 1）中的技术手段，用于测试、抽样与异常识别，并未单列为独立知识域。",
-     source:"S2 ISACA CISA ECO 2024",conf:"可信度：高",
-     hint:"2024 版仍然是五个域，没有第六域。数据分析被放在审计过程里，当作技术手段使用。"}
+     hint:"算一遍：只有 26+26 能到 52。找那两个 26% 的域，别看域号大小。"},
+
+    {ch:3, scene:"周五 16:50 · 数据室",
+     stem:"835 笔流水，你想找出「同一个收款人在同一天被拆成好几笔付款」的情形。抽了 30 笔，一笔没碰上。问题出在哪？",
+     options:["运气不好，再抽 30 笔","抽样看的是单笔属性，而拆单是跨记录的「模式」，得靠全量规则筛查","应该直接问财务经理有没有拆单","拆单的每笔金额都很小，本来就不用管"],answer:1,
+     explain:"拆单的特征不在单笔金额上，而在「同一天 + 同一收款人 + 多笔」这个组合关系上。随机抽样时每笔被抽中的概率相同，天然不适合发现跨记录模式。这正是审计数据分析从「抽样推断」走向「全量筛查」的价值所在。",
+     source:"S2（域 1 审计过程 · 数据分析技术）",conf:"可信度：高",
+     hint:"抽样回答「这一笔对不对」，全量筛查回答「这批里有没有某种搭配」。拆单就是搭配。"},
+
+    {ch:3, scene:"周三 09:30 · 信息中心",
+     stem:"你准备写 SQL 直接从业务库取数做分析。敲下第一条语句之前，最该先确认的是什么？",
+     options:["报表做出来好不好看","数据库是哪家厂商、哪个版本","取数口径与数据完整性——记录数、金额合计能不能和总账或报表勾稽上","服务器放在哪个机房"],answer:2,
+     explain:"数据审计的第一道关不是分析，是「这份数据可不可信」。口径不清（含不含未审核单据、含不含跨期），数据不全（导了一半、字段被截断），后面所有结论都是空中楼阁。先做完整性核对与勾稽，再谈分析。",
+     source:"S2（域 1）+ 本人课内实验经验",conf:"可信度：中",
+     hint:"垃圾进，垃圾出。先证明这份数能对上账，再拿它下任何结论。"},
+
+    /* ---------- 第五章 · 舞弊与操守 ---------- */
+    {ch:4, scene:"周一 11:00 · 治理层沟通",
+     stem:"和治理层开会，对方直接问：如果我们这儿出了舞弊，是不是你们审计的责任？你怎么答？",
+     options:["管理层和治理层对防止与发现舞弊负责，注册会计师按 CSA 1141 识别和评估舞弊导致的重大错报风险","是，注册会计师对防止舞弊负主要责任","只要出了无保留意见，就说明不存在舞弊","舞弊归司法机关管，不在审计范围内"],answer:0,
+     explain:"防止和发现舞弊，首先是管理层和治理层的责任，包括建立反舞弊控制与文化。注册会计师的责任是按 CSA 1141 识别和评估舞弊导致的重大错报风险，并设计和实施应对程序。审计提供的是合理保证，不是舞弊保险。",
+     source:"S4（CSA 1141）+ S1 大纲",conf:"可信度：高",
+     hint:"一句话：防舞弊是公司的事，查舞弊风险是审计的事。两边不能互相顶替。"},
+
+    {ch:4, scene:"周二 14:30 · 项目组会议",
+     stem:"按 CSA 1141，识别和评估舞弊导致的重大错报风险时，有一类认定应当假定存在舞弊风险。是哪一类？",
+     options:["存货计价","收入确认","管理费用完整性","固定资产折旧"],answer:1,
+     explain:"准则要求把「收入确认存在舞弊风险」作为假定，可以反驳，但必须有充分理由并记录。原因很直白：收入直接决定利润，粉饰报表的动机最集中在这一行。",
+     source:"S4（CSA 1141）",conf:"可信度：高",
+     hint:"想一下：为了让报表好看，最容易动手脚的是哪个数字？"},
+
+    {ch:4, scene:"周四 08:50 · 项目组",
+     stem:"出发前填独立性声明，你才知道同组小王的妻子在客户那儿做财务经理。最恰当的处理是？",
+     options:["让小王只做不涉及财务的部分，不用上报","只要小王不在报告上签字就行","让小王签一份保密承诺书即可","立即向项目合伙人报告，评估对独立性的影响，必要时把他调离项目组"],answer:3,
+     explain:"独立性看的是实质，不只是分工。近亲属在客户担任财务经理这类关键职位，会产生密切关系带来的不利影响；正确路径是报告、评价、采取防范措施，防范措施不足时调离。回避某个科目解决不了问题——被影响的是判断本身。",
+     source:"S1 大纲（职业道德与独立性）",conf:"可信度：中",
+     hint:"独立性不是靠「避开某个科目」能解决的，因为受影响的是判断本身。"},
+
+    {ch:4, scene:"1 月 6 日 · 销售部",
+     stem:"去年最后一周确认了 4000 万销售，今年 1 月又集中退回 2600 万。这个信号最贴近下面哪一项？",
+     options:["正常的季节性波动，不必在意","存货管理出了问题","收入截止性错报、提前确认收入的舞弊风险信号","与审计无关的售后政策调整"],answer:2,
+     explain:"年末突击确认、次年初集中退回，是提前确认收入（截止性错报）的典型形态。应对是查发货单、物流签收记录、退货政策与期后事项，确认商品控制权是否真的在年末转移了。",
+     source:"S1 大纲 + S4（CSA 1141 / 1301）",conf:"可信度：中",
+     hint:"问一句：这批货在 12 月 31 日那天，真的已经交给客户了吗？"},
+
+    /* ---------- 第六章 · 综合卷 ---------- */
+    {ch:5, scene:"综合卷 · 第 1 题",
+     stem:"一家 200 家门店的连锁餐饮，第一次做数据审计。桌上摆着三年流水、POS 日志和门店报表。你的第一步是？",
+     options:["先了解业务模式和信息系统，识别风险、确定重要性，再决定查什么","先抽 30 家门店的凭证，看有没有问题","先把数据全部导出做透视表","先出报告，程序边写边补"],answer:0,
+     explain:"风险导向的顺序不能倒：先懂业务（钱怎么收、货怎么走、系统怎么记），再定哪里可能错、错到什么程度算重要，最后才是程序。直接扎进数据，往往查出一堆「异常」，却说不清是不是错报。",
+     source:"S1 大纲 + S4",conf:"可信度：中",
+     hint:"顺序题记一句：先看懂，再定重点，最后才动手。"},
+
+    {ch:5, scene:"综合卷 · 第 2 题",
+     stem:"数据筛查发现：某门店日均销售额只有同类门店的 0.4 倍，毛利率却是全公司最高。你怎么处理这个结果？",
+     options:["直接认定该门店存在舞弊","门店之间本来就有差异，忽略","按同类门店均值调整该店收入","列为异常线索，结合现场观察、访谈和原始单据核对，验证是否存在现金收款不入系统"],answer:3,
+     explain:"「销售额低 + 毛利率高」是一组自相矛盾的关系：要么有未入系统的现金收入（成本已入账、收入没入），要么成本结转本身有问题。数据分析只负责把线索挑出来，定性必须回到单据和现场。",
+     source:"S2（域 1）+ 本人课内实验经验",conf:"可信度：中",
+     hint:"数据告诉你「哪里不对」，不告诉你「为什么不对」。后者要靠人证和物证。"},
+
+    {ch:5, scene:"综合卷 · 第 3 题",
+     stem:"120 万条采购明细，你想查「供应商联系人跟员工同名或同手机号」的情况。怎么做最靠谱？",
+     options:["随机抽 50 条人工比对","只看金额前 10 大的供应商","用关联比对做全量筛查，再对命中项做细节测试","问财务经理有没有这种情况"],answer:2,
+     explain:"同名、同手机号是「隐匿关联方」的典型特征：命中率极低，但漏掉一个就可能是大问题，随机抽样几乎抽不到。做法是全量比对出候选集，再逐个核实工商信息、资金流向和审批记录。",
+     source:"S2（域 1 数据分析）+ S1 大纲",conf:"可信度：中",
+     hint:"低概率、高影响的事件，抽样天然吃亏。这类就得全量扫一遍。"},
+
+    {ch:5, scene:"综合卷 · 第 4 题",
+     stem:"客户给你两份数据：一份系统原始导出，一份他们「手工整理过」的 Excel，两者金额差了 12 万。你用哪份？",
+     options:["用 Excel，整理过的更清楚","以系统原始导出为准，书面记录差异原因与取数过程，保留取数时间与校验值以备复核","两份都不用，改用报表数","让客户口头解释一下就行"],answer:1,
+     explain:"审计证据要能追溯。原始导出是一手证据，手工整理件是二手加工件，而加工过程本身就是错报风险点。正确做法是以原始数据为准、把差异查清并留痕，让每一个数字都能回到它的来源。",
+     source:"S4（CSA 1301 审计证据）",conf:"可信度：高",
+     hint:"能被复核的才叫证据。取数过程、时间、校验值，都是让别人能重做一遍的条件。"},
+
+    {ch:5, scene:"综合卷 · 第 5 题",
+     stem:"报告日前，客户以「仓库在装修」为由拒绝你监盘，也不同意函证。存货和借款两块金额都重大。你出什么意见？",
+     options:["无保留意见","否定意见","带强调事项段的无保留意见","保留意见或无法表示意见，看范围受限的影响是否重大而广泛"],answer:3,
+     explain:"范围受限不是报表错了，是「审不下去」。影响重大但不广泛，出保留意见；重大且广泛，出无法表示意见。否定意见针对的是财务报表整体存在重大错报；强调事项段用于持续经营等已恰当披露的事项——都不能拿来替代范围受限的处理。",
+     source:"S4（CSA 1501 / 1502）",conf:"可信度：高",
+     hint:"先分清是「报表错了」还是「我查不了」。查不了，就在保留和无法表示之间按影响范围选。"}
   ];
 
   var CHS = [
-    {n:"审计准则与流程", d:"CSA 编号对应什么、国家审计准则由谁制定、每项工作属于哪个阶段。", c:"c-blue", tag:"CHAPTER 01"},
-    {n:"CPA《审计》框架", d:"风险导向主线、阶段任务划分、内控审计关系、质量管理准则。", c:"c-amber", tag:"CHAPTER 02"},
-    {n:"CISA 与 IT 审计", d:"2024 版五域权重、通用控制与应用控制、审计数据分析的定位。", c:"c-green", tag:"CHAPTER 03"}
+    {n:"准则与底稿", t:"编号就是地图", d:"CSA 编号、国家审计准则、阶段归属", c:"#2f6fb0", tag:"CHAPTER 01"},
+    {n:"风险与重要性", t:"先掂量，再下手", d:"重要性、舞弊三角、控制测试、风险评估程序", c:"#e8b23f", tag:"CHAPTER 02"},
+    {n:"证据与程序", t:"三样东西不能只看", d:"函证、监盘、分析程序、证据的充分与适当", c:"#2f8f63", tag:"CHAPTER 03"},
+    {n:"IT 与数据", t:"从总账到数据库", d:"ITGC、CISA 五域、全量筛查、取数口径", c:"#2f9c95", tag:"CHAPTER 04"},
+    {n:"舞弊与操守", t:"红旗与底线", d:"舞弊责任、收入假定、独立性、截止性", c:"#6b4fa0", tag:"CHAPTER 05"},
+    {n:"综合卷", t:"一个案子走完", d:"跨章五题 · 前五章通关后解锁", c:"#8f2c22", tag:"FINAL"}
   ];
+
+  var SCENES = [
+    '<svg viewBox="0 0 200 132" aria-hidden="true">'+
+    '<path d="M8 122 H192" stroke="#14110e" stroke-width="4" stroke-linecap="round"/>'+
+    '<g stroke="#14110e" stroke-width="3" stroke-linejoin="round">'+
+    '<rect x="24" y="96" width="80" height="24" rx="3" fill="#e8b23f"/>'+
+    '<rect x="30" y="76" width="74" height="22" rx="3" fill="#fffdf7"/>'+
+    '<rect x="18" y="54" width="80" height="24" rx="3" fill="#f4efe4"/>'+
+    '<path d="M30 66 h44" stroke-width="2.4"/>'+
+    '<rect x="118" y="40" width="58" height="80" rx="4" fill="#fffdf7"/>'+
+    '<rect x="126" y="52" width="42" height="7" rx="3.5" fill="#2f6fb0" stroke="none"/>'+
+    '<rect x="126" y="66" width="42" height="7" rx="3.5" fill="#c9c3b6" stroke="none"/>'+
+    '<rect x="126" y="80" width="30" height="7" rx="3.5" fill="#c9c3b6" stroke="none"/>'+
+    '<path d="M126 100 h42" stroke-width="2.4"/></g></svg>',
+
+    '<svg viewBox="0 0 200 132" aria-hidden="true">'+
+    '<path d="M8 122 H192" stroke="#14110e" stroke-width="4" stroke-linecap="round"/>'+
+    '<path d="M22 108 L62 74 L98 92 L138 40" stroke="#14110e" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+
+    '<circle cx="138" cy="40" r="8" fill="#dd4a38" stroke="#14110e" stroke-width="3.5"/>'+
+    '<circle cx="150" cy="88" r="22" fill="rgba(255,253,247,.62)" stroke="#14110e" stroke-width="5"/>'+
+    '<path d="M166 104 L181 120" stroke="#14110e" stroke-width="9" stroke-linecap="round"/>'+
+    '</svg>',
+
+    '<svg viewBox="0 0 200 132" aria-hidden="true">'+
+    '<path d="M8 122 H192" stroke="#14110e" stroke-width="4" stroke-linecap="round"/>'+
+    '<path d="M100 120 V56" stroke="#14110e" stroke-width="5"/>'+
+    '<path d="M56 56 H144" stroke="#14110e" stroke-width="5" stroke-linecap="round"/>'+
+    '<circle cx="100" cy="48" r="7" fill="#e8b23f" stroke="#14110e" stroke-width="3"/>'+
+    '<path d="M56 56 L44 86 H68 Z" fill="#e8b23f" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+    '<path d="M144 56 L132 86 H156 Z" fill="#e8b23f" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
+    '<path d="M78 120 H122" stroke="#14110e" stroke-width="5" stroke-linecap="round"/>'+
+    '</svg>',
+
+    '<svg viewBox="0 0 200 132" aria-hidden="true">'+
+    '<path d="M8 122 H192" stroke="#14110e" stroke-width="4" stroke-linecap="round"/>'+
+    '<rect x="36" y="32" width="104" height="66" rx="6" fill="#fffdf7" stroke="#14110e" stroke-width="4"/>'+
+    '<path d="M88 98 h16 v12 h-16 z" fill="#c9c3b6" stroke="#14110e" stroke-width="3"/>'+
+    '<path d="M74 118 H106" stroke="#14110e" stroke-width="5" stroke-linecap="round"/>'+
+    '<rect x="54" y="72" width="13" height="18" fill="#e8b23f" stroke="#14110e" stroke-width="2.6"/>'+
+    '<rect x="76" y="58" width="13" height="32" fill="#2f6fb0" stroke="#14110e" stroke-width="2.6"/>'+
+    '<rect x="98" y="66" width="13" height="24" fill="#2f8f63" stroke="#14110e" stroke-width="2.6"/>'+
+    '<circle cx="166" cy="32" r="16" fill="#e8b23f" stroke="#14110e" stroke-width="3.5"/>'+
+    '<circle cx="166" cy="32" r="5.5" fill="#14110e"/>'+
+    '</svg>',
+
+    '<svg viewBox="0 0 200 132" aria-hidden="true">'+
+    '<path d="M8 122 H192" stroke="#14110e" stroke-width="4" stroke-linecap="round"/>'+
+    '<rect x="36" y="62" width="82" height="58" rx="3" fill="#f4efe4" stroke="#14110e" stroke-width="4"/>'+
+    '<path d="M36 62 h82" stroke="#14110e" stroke-width="4"/>'+
+    '<path d="M50 80 h54 M50 94 h54 M50 108 h36" stroke="#14110e" stroke-width="2.6" stroke-linecap="round"/>'+
+    '<path d="M150 120 V30" stroke="#14110e" stroke-width="5" stroke-linecap="round"/>'+
+    '<path d="M150 32 L187 44 L150 56 Z" fill="#dd4a38" stroke="#14110e" stroke-width="3.5" stroke-linejoin="round"/>'+
+    '</svg>',
+
+    '<svg viewBox="0 0 200 132" aria-hidden="true">'+
+    '<path d="M8 122 H192" stroke="#14110e" stroke-width="4" stroke-linecap="round"/>'+
+    '<rect x="26" y="42" width="88" height="78" rx="4" fill="#f6efe0" stroke="#14110e" stroke-width="4"/>'+
+    '<path d="M44 62 h52 M44 76 h52 M44 90 h34" stroke="#14110e" stroke-width="2.6" stroke-linecap="round"/>'+
+    '<circle cx="150" cy="92" r="25" fill="none" stroke="#ffd9ce" stroke-width="4"/>'+
+    '<text x="150" y="103" text-anchor="middle" font-size="27" font-weight="900" fill="#ffd9ce" font-family="sans-serif">审</text>'+
+    '</svg>'
+  ];
+
 
   var ROLES = [
     {n:"审计助理", d:"从底稿做起", svg:
       '<svg viewBox="6 14 148 186" aria-hidden="true">'+
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#2f6fb0" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
-      '<path d="M46 142 Q30 154 34 170" stroke="#2f6fb0" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<path d="M114 142 Q130 154 126 170" stroke="#2f6fb0" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M46 142 Q30 154 34 170" stroke="#24588c" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M114 142 Q130 154 126 170" stroke="#24588c" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<rect x="40" y="178" width="80" height="18" rx="3" fill="#e8b23f" stroke="#14110e" stroke-width="3.5"/>'+
       '<rect x="36" y="162" width="88" height="17" rx="3" fill="#fffdf7" stroke="#14110e" stroke-width="3.5"/>'+
@@ -582,8 +795,8 @@ h1,h2,h3,p{margin:0}
     {n:"IT 审计员", d:"系统与数据", svg:
       '<svg viewBox="6 14 148 186" aria-hidden="true">'+
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#2f9c95" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
-      '<path d="M48 142 Q34 160 40 180" stroke="#2f9c95" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<path d="M112 142 Q126 156 122 168" stroke="#2f9c95" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M48 142 Q34 160 40 180" stroke="#227a74" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M112 142 Q126 156 122 168" stroke="#227a74" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<path d="M66 130 L80 150 L94 130" fill="#fff" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<rect x="86" y="150" width="58" height="46" rx="5" fill="#fff" stroke="#14110e" stroke-width="3.5"/>'+
@@ -607,8 +820,8 @@ h1,h2,h3,p{margin:0}
     {n:"内控专员", d:"流程与控制", svg:
       '<svg viewBox="6 14 148 186" aria-hidden="true">'+
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#6b4fa0" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
-      '<path d="M112 142 Q126 158 120 176" stroke="#6b4fa0" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<path d="M46 142 Q34 156 36 168" stroke="#6b4fa0" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M112 142 Q126 158 120 176" stroke="#553d80" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M46 142 Q56 160 70 172" stroke="#553d80" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<path d="M68 130 L80 146 L92 130" fill="#fff" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M80 146 l-8 12 8 24 8-24 z" fill="#dd4a38" stroke="#14110e" stroke-width="3" stroke-linejoin="round"/>'+
@@ -633,8 +846,8 @@ h1,h2,h3,p{margin:0}
     {n:"数据分析师", d:"全量核查", svg:
       '<svg viewBox="6 14 148 186" aria-hidden="true">'+
       '<path d="M42 200 Q42 130 80 130 Q118 130 118 200 Z" fill="#2f8f63" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
-      '<path d="M50 146 Q36 158 40 176" stroke="#2f8f63" stroke-width="12" fill="none" stroke-linecap="round"/>'+
-      '<path d="M114 142 Q124 152 120 162" stroke="#2f8f63" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M50 146 Q36 158 40 176" stroke="#256f4d" stroke-width="12" fill="none" stroke-linecap="round"/>'+
+      '<path d="M114 142 Q124 152 120 162" stroke="#256f4d" stroke-width="12" fill="none" stroke-linecap="round"/>'+
       '<rect x="72" y="114" width="16" height="20" fill="#eec3a2" stroke="#14110e" stroke-width="3"/>'+
       '<path d="M66 130 L80 150 L94 130" fill="#fff" stroke="#14110e" stroke-width="4" stroke-linejoin="round"/>'+
       '<rect x="82" y="142" width="66" height="58" rx="4" fill="#fffdf7" stroke="#14110e" stroke-width="3.5"/>'+
@@ -658,14 +871,14 @@ h1,h2,h3,p{margin:0}
       '</svg>'}
   ];
 
-  var KEY = "auditquest_v2";
+  var KEY = "auditquest_v3";
   var state = newState();
 
   function newState(){
     return {
       name:"", role:0,
       answers:new Array(QUESTIONS.length).fill(null),
-      done:[null,null,null],
+      done:new Array(CHS.length).fill(null),
       queue:[], qi:0, ch:0,
       picked:null, answered:false
     };
@@ -718,27 +931,52 @@ h1,h2,h3,p{margin:0}
     show("map");
   }
 
-  /* ---------- 章节地图 ---------- */
+  /* ---------- 案卷地图 ---------- */
+  var LOCK = '<svg class="lock" viewBox="0 0 30 36" aria-hidden="true">'+
+    '<path d="M8 16 V11 a7 7 0 0 1 14 0 V16" fill="none" stroke="#f6f1e4" stroke-width="3.4" stroke-linecap="round"/>'+
+    '<rect x="4" y="16" width="22" height="17" rx="3" fill="#f6f1e4" stroke="#14110e" stroke-width="2.6"/>'+
+    '<circle cx="15" cy="24" r="2.6" fill="#14110e"/></svg>';
+
+  function bossLocked(){
+    return state.done.slice(0,CHS.length-1).some(function(v){ return v===null; });
+  }
   function renderMap(){
     $("map-avatar").innerHTML = ROLES[state.role] ? ROLES[state.role].svg : "";
-    $("map-hello").textContent = state.name ? (state.name+" 的章节地图") : "章节地图";
+    $("map-hello").textContent = state.name ? (state.name+" 的案卷墙") : "案卷墙";
     var box=$("maps"); box.innerHTML="";
     CHS.forEach(function(c,i){
-      var d=document.createElement("div");
-      d.className="panel mapcard";
+      var isBoss = (i===CHS.length-1);
+      var locked = isBoss && bossLocked();
       var done = state.done[i];
-      var stamp, btnTxt;
-      if(done===null){ stamp='<span class="stamp">未开始</span>'; btnTxt="进入本章"; }
-      else if(done===4){ stamp='<span class="stamp done">满分 4/4</span>'; btnTxt="重新挑战"; }
-      else { stamp='<span class="stamp doing">已得 '+done+'/4</span>'; btnTxt="重新挑战"; }
+      var total = chapterIdx(i).length;
+
+      var d=document.createElement("div");
+      d.className = "case"+(isBoss?" boss":"")+(locked?" locked":" open");
+      d.style.setProperty("--cc", c.c);
+      d.style.setProperty("--i", i);
+      d.setAttribute("role","button");
+      d.setAttribute("tabindex", locked?"-1":"0");
+      d.setAttribute("aria-label", c.n + (locked?"（未解锁）":""));
+
+      var dots="";
+      var sub = locked
+        ? "通过前五章后解锁"
+        : (done===null ? total+" 题 · "+c.t : "最好 "+done+"/"+total+" · "+c.t);
+
       d.innerHTML =
-        '<span class="wm">0'+(i+1)+'</span>'+
-        '<div class="idx">'+c.tag+'</div>'+
-        '<h3>'+c.n+'</h3>'+
-        '<div class="d">'+c.d+'</div>'+
-        stamp+
-        '<button class="btn sm go">'+btnTxt+'</button>';
-      d.querySelector(".go").addEventListener("click",function(){ enterChapter(i); });
+        '<div class="no">'+(isBoss?"★":(i+1))+'</div>'+
+        (done!==null && done===total ? '<span class="seal-ok">已结案</span>' : '')+
+        '<div class="top">'+SCENES[i]+(locked?LOCK:'')+'</div>'+
+        '<div class="bar"><div><b>'+c.n+'</b><span>'+sub+'</span></div>'+
+          '<em>'+(locked?"锁":"进入 →")+'</em></div>';
+
+      if(!locked){
+        var go=function(){ enterChapter(i); };
+        d.addEventListener("click",go);
+        d.addEventListener("keydown",function(e){
+          if(e.key==="Enter"||e.key===" "){ e.preventDefault(); go(); }
+        });
+      }
       box.appendChild(d);
     });
   }
@@ -753,6 +991,7 @@ h1,h2,h3,p{margin:0}
     state.picked=null; state.answered=false;
 
     $("qcount").textContent=(state.qi+1)+" / "+state.queue.length;
+    $("qscene").textContent=q.scene;
     $("qtag").textContent=CHS[q.ch].tag+" · "+CHS[q.ch].n;
     $("pbar").style.width=((state.qi+1)/state.queue.length*100)+"%";
     $("qstem").textContent=q.stem;
@@ -811,29 +1050,28 @@ h1,h2,h3,p{margin:0}
     finishChapter();
   }
   function finishChapter(){
-    var right=0;
+    var right=0, total=state.queue.length;
     state.queue.forEach(function(i){ if(state.answers[i]===QUESTIONS[i].answer) right++; });
     state.done[state.ch]=right;
-    var pct=Math.round(right/state.queue.length*100);
+    var pct=Math.round(right/total*100);
     var lv=pct>=85?"熟练":(pct>=60?"达标":"入门");
+    var isBoss = (state.ch===CHS.length-1);
 
     $("end-ch").textContent=CHS[state.ch].tag+" 结算";
-    $("end-num").textContent=right+" / "+state.queue.length;
+    $("end-num").textContent=right+" / "+total;
     $("end-lv").textContent="本章 "+lv;
     $("end-detail").innerHTML="本章正确率 <b>"+pct+"%</b>。<br>"+
-      (right===4?"四题全对，这一章可以过了。":"错 "+ (4-right) +" 题，已自动进入错题本。");
+      (right===total
+        ? (isBoss ? "综合卷全对。零散的知识点，已经能串成一个案子了。" : "全对，这一章可以盖章结案了。")
+        : "错 "+ (total-right) +" 题，已自动进入错题本。");
 
     var allDone = state.done.every(function(v){ return v!==null; });
-    $("b-nextch").textContent = allDone ? "查看总成绩" : "下一章";
+    $("b-nextch").textContent = allDone ? "查看总成绩" : "回案卷墙";
     show("end");
   }
   function afterChapter(){
     var allDone = state.done.every(function(v){ return v!==null; });
     if(allDone){ showResult(); return; }
-    for(var k=1;k<=3;k++){
-      var c=(state.ch+k)%3;
-      if(state.done[c]===null){ enterChapter(c); return; }
-    }
     renderMap(); show("map");
   }
 
@@ -851,13 +1089,13 @@ h1,h2,h3,p{margin:0}
     $("r-level").textContent=lv;
 
     var box=$("r-chs"); box.innerHTML="";
-    [0,1,2].forEach(function(c){
-      var idxs=chapterIdx(c), r=0;
+    CHS.forEach(function(c,c_i){
+      var idxs=chapterIdx(c_i), r=0;
       idxs.forEach(function(i){ if(state.answers[i]===QUESTIONS[i].answer) r++; });
       var pct=Math.round(r/idxs.length*100);
       var row=document.createElement("div");
       row.className="chrow";
-      row.innerHTML='<span class="nm">'+CHS[c].n+'</span>'+
+      row.innerHTML='<span class="nm">'+c.n+'</span>'+
         '<span class="tk"><i class="'+(pct<60?"low":"")+'" style="width:'+pct+'%"></i></span>'+
         '<span class="pc">'+pct+'%</span>';
       box.appendChild(row);
@@ -869,23 +1107,23 @@ h1,h2,h3,p{margin:0}
     $("c-date").textContent=new Date().toLocaleDateString("zh-CN");
 
     var minPct=100, weak=[];
-    [0,1,2].forEach(function(c){
-      var idxs=chapterIdx(c), r=0;
+    CHS.forEach(function(c,c_i){
+      var idxs=chapterIdx(c_i), r=0;
       idxs.forEach(function(i){ if(state.answers[i]===QUESTIONS[i].answer) r++; });
       var p=Math.round(r/idxs.length*100);
-      if(p<minPct){ minPct=p; weak=[CHS[c].n]; }
-      else if(p===minPct){ weak.push(CHS[c].n); }
+      if(p<minPct){ minPct=p; weak=[c.n]; }
+      else if(p===minPct){ weak.push(c.n); }
     });
 
     var adv="";
     if(t.score>=85){
-      adv="<b>框架已成型。</b>三章识记没有明显短板。下一步把「知道」换成「会用」——点下面的「去数据看板」，看 835 笔流水怎么按全量核查、金额分层、逐级下钻的做法走一遍，再回头对准则条目。";
+      adv="<b>框架已成型。</b>五章加综合卷，没有明显短板。下一步把「知道」换成「会用」——点下面的「去数据看板」，看 835 笔流水怎么按全量核查、金额分层、逐级下钻走一遍，再回头对准则条目。";
     }else if(t.score>=60){
-      adv="<b>框架基本掌握，仍有短板。</b>最薄弱的是 <b>"+weak.join("、")+"</b>。回到题库清单，只看该章的准则编号 / 域权重对应表，先记结构再记细节。";
+      adv="<b>框架基本掌握，仍有短板。</b>最薄弱的是 <b>"+weak.join("、")+"</b>。回到《题库与官方来源清单》，只看该章的准则编号 / 域权重对应表，先记结构再记细节。";
     }else{
       adv="<b>框架尚未成型。</b>别急着刷题——先建三张表：准则编号与名称对照表、审计流程阶段表、CISA 五域权重表。结构记住，正确率自然上来。";
     }
-    adv+="<br><br>全部题目依据见《题库与官方来源清单》，每题标注来源编号（S1–S7）与可信度。";
+    adv+="<br><br>全部题目依据见《题库与官方来源清单》，每题标注来源编号（S1–S5）与可信度。";
     $("r-advice").innerHTML=adv;
 
     var s=store()||{};
