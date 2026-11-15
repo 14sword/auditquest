@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>审计数据分析看板 · 商业银行零售信贷与交易流水</title>
+<style>
+:root{
+  --navy:#0B2A5B; --navy2:#123A78; --blue:#185FA5; --sky:#E8F0FA; --ink:#1F2A3D;
+  --gray:#6B7A90; --line:#DCE4EF; --red:#C0392B; --redbg:#FDECEA;
+  --orange:#B85C00; --orangebg:#FFF6EA; --green:#1E7B4F; --greenbg:#E7F5EE;
+  --gold:#E8B93F; --goldbg:#FFF8E3; --bg:#F4F7FB; --teal:#0F6E56;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);
+  font-size:13.5px;line-height:1.62;padding-bottom:70px}
+
+/* ============ 顶部应用条 ============ */
+.hero{background:linear-gradient(135deg,#0B2A5B 0%,#123A78 58%,#185FA5 100%);color:#fff}
+.hero .in{max-width:1160px;margin:0 auto;padding:15px 20px 14px;display:flex;align-items:center;gap:22px}
+.hero .hd{flex:1;min-width:0}
+.hero h1{font-size:18.5px;font-weight:700;letter-spacing:.3px;line-height:1.4}
+.hero .sub{font-size:12.5px;color:#E6EFFC;margin-top:6px;letter-spacing:.15px;
+  text-shadow:0 1px 2px rgba(0,0,0,.22)}
+.hero .sub b{color:#FFDF9E;font-weight:700}
+.hclock{flex:0 0 auto;text-align:right;border-left:1px solid rgba(255,255,255,.25);padding-left:20px}
+.hclock .ct{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px;line-height:1.25}
+.hclock .cd{font-size:12px;color:#E0EAF9;white-space:nowrap}
+
+/* ============ 一级页签 ============ */
+.tabbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;
+  box-shadow:0 2px 10px rgba(11,42,91,.07)}
+.tabbar .in{max-width:1160px;margin:0 auto;padding:0 14px;display:flex;overflow-x:auto}
+.tabbar .in::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;appearance:none;border:0;background:none;cursor:pointer;font-family:inherit;
+  font-size:13.5px;color:var(--gray);border-bottom:3px solid transparent;padding:12px 15px 9px;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;transition:all .2s}
+.tab .num{width:20px;height:20px;border-radius:6px;background:#EDF1F7;color:var(--gray);
+  font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none;transition:all .2s}
+.tab:hover{color:var(--navy)}
+.tab.on{color:var(--navy);font-weight:700;border-bottom-color:var(--blue)}
+.tab.on .num{background:var(--navy);color:#fff}
+
+.wrap{max-width:1160px;margin:0 auto;padding:12px 20px 26px}
+.page{display:none;animation:fade .26s ease}
+.page.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* ============ 通用卡片 ============ */
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 1px 3px rgba(11,42,91,.05);padding:14px 16px;margin-bottom:12px}
+.card>h3{font-size:14px;color:var(--navy);font-weight:700;display:flex;align-items:center;gap:8px;
+  margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #EEF3F9}
+.card>h3 .k{font-size:11px;font-weight:700;color:#fff;background:var(--navy);border-radius:5px;
+  padding:2px 7px;letter-spacing:.5px}
+.card>h3 .r{margin-left:auto;font-size:11.5px;font-weight:500;color:var(--gray)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+
+/* ============ KPI 卡 ============ */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:13px 14px 12px;
+  box-shadow:0 1px 3px rgba(11,42,91,.05);position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--blue)}
+.kpi.r::before{background:var(--red)} .kpi.o::before{background:var(--orange)}
+.kpi.g::before{background:var(--green)}
+.kpi .lb{font-size:12px;color:var(--gray);display:flex;align-items:center;gap:6px}
+.kpi .vl{font-size:26px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;
+  letter-spacing:-.5px;line-height:1.24;margin-top:4px}
+.kpi .vl small{font-size:13px;font-weight:600;margin-left:2px;letter-spacing:0}
+.kpi.r .vl{color:var(--red)} .kpi.o .vl{color:var(--orange)} .kpi.g .vl{color:var(--green)}
+.kpi .ft{font-size:11.5px;color:var(--gray);margin-top:5px;line-height:1.45}
+
+/* ============ 状态色签 ============ */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  border-radius:5px;padding:1.5px 7px;white-space:nowrap;line-height:1.5}
+.t-red{background:var(--redbg);color:var(--red);border:1px solid #F3C9C4}
+.t-org{background:var(--orangebg);color:var(--orange);border:1px solid #F5D9B4}
+.t-gold{background:var(--goldbg);color:#8A6A00;border:1px solid #F0E0A0}
+.t-green{background:var(--greenbg);color:var(--green);border:1px solid #BFE3CF}
+.t-gray{background:#F1F4F8;color:var(--gray);border:1px solid #E1E8F1}
+.t-blue{background:var(--sky);color:var(--blue);border:1px solid #C9DDF3}
+.nw{white-space:nowrap}
+
+/* ============ 监管要素条 ============ */
+.reg{background:linear-gradient(180deg,#FBFCFE,#F6F9FD);border:1px solid var(--line);
+  border-left:3px solid var(--navy);border-radius:10px;padding:11px 14px;margin-bottom:12px}
+.reg .t{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:7px;letter-spacing:.3px}
+.reg ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:5px 22px}
+.reg li{font-size:12.5px;color:#3B4A61;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.reg li b{color:var(--ink);font-weight:600}
+.reg .dot{width:5px;height:5px;border-radius:50%;background:var(--blue);flex:none;margin-top:7px}
+
+/* ============ 条形图 ============ */
+.bars{display:flex;flex-direction:column;gap:9px}
+.bar{display:grid;grid-template-columns:78px 1fr 96px;align-items:center;gap:10px}
+.bars.wl .bar{grid-template-columns:106px 1fr 74px;gap:9px}
+.bar .nm{font-size:12.5px;color:#3B4A61;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .tr{height:20px;background:#F2F6FB;border-radius:5px;overflow:hidden;position:relative}
+.bar .fi{height:100%;border-radius:5px;background:linear-gradient(90deg,#185FA5,#3C86CE);
+  transition:width .5s cubic-bezier(.3,.8,.4,1)}
+.bar.rd .fi{background:linear-gradient(90deg,#B8342A,#D65A4E)}
+.bar.og .fi{background:linear-gradient(90deg,#B85C00,#D98A33)}
+.bar.gy .fi{background:linear-gradient(90deg,#8A97AB,#A9B4C4)}
+.bar .vv{font-size:12.5px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;text-align:right}
+.bar .vv em{font-style:normal;font-weight:500;color:var(--gray);font-size:11.5px;margin-left:4px}
+
+/* 堆叠条 */
+.stack{display:flex;height:30px;border-radius:7px;overflow:hidden;border:1px solid var(--line);margin:4px 0 9px}
+.stack div{display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;color:#fff;
+  white-space:nowrap;overflow:hidden}
+.sg1{background:linear-gradient(90deg,#0B2A5B,#185FA5)}
+.sg2{background:#5B9BD5}
+.sg3{background:#A8C6E4;color:#0B2A5B}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--gray);margin-bottom:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+/* ============ 表格 ============ */
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--navy);color:#fff;font-weight:600;text-align:left;padding:7px 9px;
+  font-size:12px;letter-spacing:.2px;white-space:nowrap}
+tbody td{padding:6.5px 9px;border-bottom:1px solid #EEF3F9;color:#33425A}
+tbody tr:nth-child(even){background:#FAFCFF}
+tbody tr.drill{cursor:pointer}
+tbody tr.drill:hover{background:var(--sky)}
+tbody tr.drill td:first-child::before{content:"▸";color:var(--blue);margin-right:6px;font-size:10px;
+  display:inline-block;transition:transform .2s}
+tbody tr.drill.op td:first-child::before{transform:rotate(90deg)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+td .d{font-size:11px;color:var(--gray)}
+tr.drillbox{display:none}
+tr.drillbox.show{display:table-row}
+tr.drillbox>td{background:#F7FAFE;border-bottom:1px solid var(--line);padding:0}
+.dbin{padding:9px 12px 10px 26px;font-size:12.5px;color:#3B4A61;line-height:1.7}
+.dbin b{color:var(--navy)}
+.dbin .row{display:grid;grid-template-columns:78px 1fr;gap:8px;padding:2px 0}
+.dbin .row span:first-child{color:var(--gray);font-size:12px}
+.chain{font-size:12px;color:var(--blue);background:var(--sky);border-radius:6px;padding:4px 9px;
+  display:inline-block;margin-top:6px}
+
+/* ============ 步骤链 ============ */
+.steps{display:flex;align-items:stretch;gap:0;margin:2px 0 10px;overflow-x:auto}
+.step{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:9px;padding:9px 11px;position:relative}
+.step+.step{margin-left:22px}
+.step+.step::before{content:"→";position:absolute;left:-17px;top:50%;transform:translateY(-50%);
+  color:#B9C6D8;font-size:14px;font-weight:700}
+.step .sn{font-size:10.5px;font-weight:700;color:#fff;background:var(--blue);border-radius:4px;
+  padding:1px 6px;display:inline-block;margin-bottom:5px}
+.step .st{font-size:12.5px;font-weight:700;color:var(--navy);line-height:1.4}
+.step .sd{font-size:11.5px;color:var(--gray);margin-top:3px;line-height:1.45}
+
+/* ============ 结论 / 溯源 ============ */
+.note{background:#FFFDF6;border:1px solid #F0E3BC;border-radius:9px;padding:10px 13px;
+  font-size:12.5px;color:#6B5716;line-height:1.68}
+.note b{color:#4A3A05}
+.src{margin-top:11px;padding-top:9px;border-top:1px dashed var(--line);
+  font-size:11.5px;color:var(--gray);line-height:1.65}
+.src b{color:#55637A;font-weight:600}
+.mt0{margin-top:0}
+
+/* ============ 底部翻页条 ============ */
+.pager{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.96);
+  backdrop-filter:blur(8px);border-top:1px solid var(--line);z-index:50;
+  box-shadow:0 -2px 12px rgba(11,42,91,.06)}
+.pager .in{max-width:1160px;margin:0 auto;padding:9px 20px;display:flex;align-items:center;gap:14px}
+.pbtn{appearance:none;border:1px solid var(--line);background:#fff;border-radius:8px;
+  padding:6px 13px;font-family:inherit;font-size:12.5px;color:var(--navy);cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:all .18s;font-weight:600}
+.pbtn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pbtn:disabled{opacity:.4;cursor:default}
+.pbtn:disabled:hover{background:#fff;color:var(--navy);border-color:var(--line)}
+.dots{display:flex;gap:7px;margin:0 auto}
+.dots i{width:22px;height:5px;border-radius:3px;background:#DCE4EF;cursor:pointer;transition:all .2s}
+.dots i.on{background:var(--blue);width:30px}
+.pgh{font-size:12px;color:var(--gray);font-variant-numeric:tabular-nums;white-space:nowrap}
+.kbd{font-size:11px;color:var(--gray)}
+.kbd b{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;
+  padding:0 4px;margin:0 2px;font-family:inherit;background:#fff;color:#55637A;font-weight:600}
+
+/* ============ 响应式 ============ */
+@media(max-width:900px){
+  .kpis{grid-template-columns:1fr 1fr}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .reg ul{grid-template-columns:1fr}
+  .steps{flex-direction:column}
+  .step+.step{margin-left:0;margin-top:20px}
+  .step+.step::before{content:"↓";left:50%;top:-16px;transform:translateX(-50%)}
+}
+
+/* ============ 打印 ============ */
+@media print{
+  body{background:#fff;padding-bottom:0;font-size:11.5px}
+  .tabbar,.pager,.kbd{display:none!important}
+  .page{display:block!important;page-break-after:always}
+  .page:last-of-type{page-break-after:auto}
+  .card,.kpi,.reg{break-inside:avoid;box-shadow:none}
+  .hero{background:#0B2A5B!important}
+  tr.drillbox{display:table-row!important}
+  .drillbox>td{background:#fff!important}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="in">
+    <div class="hd">
+      <h1>审计数据分析看板 · 商业银行零售信贷与交易流水</h1>
+      <div class="sub">数据来源：本人第 3 次课内实验（2026-10-13，脱敏报告）｜样本：单客户流水 <b>835 笔</b>、<b>10.63 万元</b>｜派生值均标注算式，未留存字段不填估值</div>
+    </div>
+    <div class="hclock">
+      <div class="ct" id="clock">--:--</div>
+      <div class="cd" id="today">2026-11-15</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabbar">
+  <div class="in" id="tabs">
+    <button class="tab on" data-t="p1"><span class="num">1</span>总览与风险分级</button>
+    <button class="tab" data-t="p2"><span class="num">2</span>流水分层与笔均</button>
+    <button class="tab" data-t="p3"><span class="num">3</span>口径校验与审查程序</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ================= 页 1 ================= -->
+<section class="page on" id="p1">
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="lb">交易笔数</div>
+      <div class="vl">835 <small>笔</small></div>
+      <div class="ft">单客户流水样本，分析粒度＝逐笔</div>
+    </div>
+    <div class="kpi">
+      <div class="lb">交易金额</div>
+      <div class="vl">10.63 <small>万元</small></div>
+      <div class="ft">笔均 127.31 元 <span class="tag t-gray">派生 106,300÷835</span></div>
+    </div>
+    <div class="kpi r">
+      <div class="lb">无地理标签金额占比 <span class="tag t-red">一级</span></div>
+      <div class="vl">80.43<small>%</small></div>
+      <div class="ft">8.55 万 ÷ 10.63 万（派生）；641 笔无城市</div>
+    </div>
+    <div class="kpi r">
+      <div class="lb">支付方式未标注 <span class="tag t-red">一级</span></div>
+      <div class="vl">38.7<small>%</small></div>
+      <div class="ft">支出近八成集中于三类标签</div>
+    </div>
+  </div>
+
+  <div class="reg">
+    <div class="t">监管要素条 · 阈值与分级（阈值口径：本人设定，非实验给定）</div>
+    <ul>
+      <li><span class="dot"></span><b>无地理标签金额占比</b> 黄 ≥30% / 红 ≥60%，本期 <b>80.43%</b> <span class="tag t-red nw">已触红</span></li>
+      <li><span class="dot"></span><b>支付方式未标注率</b> 黄 ≥10% / 红 ≥25%，本期 <b>38.7%</b> <span class="tag t-red nw">已触红</span></li>
+      <li><span class="dot"></span><b>单城市笔均偏离全样本</b> 黄 ≥3× / 红 ≥10×</li>
+      <li><span class="dot"></span><b>口径一致率</b> 绿 ≥99%，本期 <b>99.48%</b> <span class="tag t-green nw">正常</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="k">核心</span>金额分层：二八结构<span class="r">高消费 219 笔贡献 83.8% 金额</span></h3>
+    <div class="stack">
+      <div class="sg1" style="width:83.8%">83.8%　219 笔</div>
+      <div class="sg2" style="width:7.3%;color:#0B2A5B">7.3%</div>
+      <div class="sg3" style="width:8.9%">8.9%　510 笔</div>
+    </div>
+    <div class="legend">
+      <span><i class="sg1"></i>高消费 &gt;100 元</span>
+      <span><i class="sg2"></i>中段 50–100 元</span>
+      <span><i class="sg3"></i>低消费 &lt;50 元</span>
+    </div>
+    <table class="mt0">
+      <thead><tr><th>分层</th><th class="n">笔数</th><th class="n">笔数占比</th><th class="n">金额占比</th><th class="n">金额（元）</th><th>口径</th></tr></thead>
+      <tbody>
+        <tr><td>高消费 &gt; 100 元</td><td class="n">219</td><td class="n">26.2%</td><td class="n"><b>83.8%</b></td><td class="n">≈ 89,079</td><td><span class="tag t-gray">金额＝83.8%×106,300 派生</span></td></tr>
+        <tr><td>中段 50–100 元</td><td class="n">106</td><td class="n">12.7%</td><td class="n">7.3%</td><td class="n">≈ 7,760</td><td><span class="tag t-gray">笔数＝835−219−510 派生</span></td></tr>
+        <tr><td>低消费 &lt; 50 元</td><td class="n">510</td><td class="n">61.1%</td><td class="n">8.9%</td><td class="n">≈ 9,461</td><td><span class="tag t-gray">金额＝8.9%×106,300 派生</span></td></tr>
+        <tr style="background:#F7FAFE"><td><b>合计</b></td><td class="n"><b>835</b></td><td class="n"><b>100%</b></td><td class="n"><b>100%</b></td><td class="n"><b>106,300</b></td><td>与实验报告总数一致</td></tr>
+      </tbody>
+    </table>
+    <div class="src"><b>读法</b>：笔数集中在小额（61.1%），金额集中在单笔大额（83.8%）——审计上意味着<b>抽样若按笔数均匀抽，会系统性漏掉风险金额</b>，必须按金额分层抽样。</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="k">构成</span>支付方式标签分布<span class="r">前三类合计 77.9%</span></h3>
+    <div class="bars">
+      <div class="bar rd"><div class="nm">未标注</div><div class="tr"><div class="fi" style="width:100%"></div></div><div class="vv">38.7% <em>一级</em></div></div>
+      <div class="bar"><div class="nm">商旅出行</div><div class="tr"><div class="fi" style="width:59.9%"></div></div><div class="vv">23.2%</div></div>
+      <div class="bar"><div class="nm">转账红包</div><div class="tr"><div class="fi" style="width:41.3%"></div></div><div class="vv">16.0%</div></div>
+      <div class="bar gy"><div class="nm">其他标签</div><div class="tr"><div class="fi" style="width:57.1%"></div></div><div class="vv">22.1% <em>派生</em></div></div>
+    </div>
+    <div class="src"><b>派生说明</b>：实验报告给出未标注 38.7%、商旅出行 23.2%、转账红包 16.0%；其余标签合计 ＝ 100−77.9 ＝ 22.1%，为差额派生，<b>报告未逐项留存其余标签明细</b>，故不拆分。条形长度按占最大值（38.7%）等比缩放。</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="k">结论</span>三句话</h3>
+    <div class="note">
+      <b>① 金额结构失真风险最高。</b>83.8% 的金额藏在 26.2% 的大额笔数里，按笔数抽样必然漏风险，须改按金额分层。<br>
+      <b>② 标签体系不足以支撑结论。</b>38.7% 未标注 ＋ 80.43% 金额缺地理标签，任何"按场景/按地区"的结论都必须先声明覆盖边界。<br>
+      <b>③ 异常点靠"笔均"而非"总额"识别。</b>淄博 1 笔 2,598 元、上海 28 笔笔均 57 元，两者总额都不显眼，只有笔均能暴露。
+    </div>
+  </div>
+
+  <div class="src"><b>溯源</b>：数据取自本人第 3 次课内实验报告「审计数据分析」（2026-10-13 实验 / 2026-10-18 定稿，脱敏版）；金额分层、支付方式占比为该报告的原始结果，标注「派生」者为本次看板按算式换算，标注「本人设定」者为看板阈值口径。</div>
+</section>
+
+<!-- ================= 页 2 ================= -->
+<section class="page" id="p2">
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="lb">有城市标签的交易</div>
+      <div class="vl">194 <small>笔</small></div>
+      <div class="ft">占笔数 23.2%；金额 2.08 万元（派生）</div>
+    </div>
+    <div class="kpi r">
+      <div class="lb">无城市标签</div>
+      <div class="vl">641 <small>笔</small></div>
+      <div class="ft">8.55 万元，占金额 80.43%</div>
+    </div>
+    <div class="kpi o">
+      <div class="lb">单笔最高（淄博）</div>
+      <div class="vl">2,598 <small>元</small></div>
+      <div class="ft">1 笔即达全样本笔均 20.4 倍 <span class="tag t-red">一级</span></div>
+    </div>
+    <div class="kpi">
+      <div class="lb">笔均最低（上海）</div>
+      <div class="vl">57 <small>元</small></div>
+      <div class="ft">28 笔高频小额，仅为全样本笔均 0.45 倍</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="k">分布</span>城市笔数分布<span class="r">坐标基准：有城市标签的 194 笔，最大值 82 笔</span></h3>
+    <div class="stack" style="height:24px">
+      <div style="width:23.2%;background:linear-gradient(90deg,#0B2A5B,#185FA5)">有城市 194</div>
+      <div style="width:76.8%;background:#C0392B">无标签 641 笔 · 76.8%</div>
+    </div>
+    <div class="legend">
+      <span><i style="background:#185FA5"></i>有城市标签（194 笔，23.2%）</span>
+      <span><i style="background:#C0392B"></i>无城市标签（641 笔，76.8% ＝ 641÷835 派生）</span>
+    </div>
+    <div class="bars" style="margin-top:10px">
+      <div class="bar gy"><div class="nm">其他城市</div><div class="tr"><div class="fi" style="width:100%"></div></div><div class="vv">82 <em>8,403 元</em></div></div>
+      <div class="bar"><div class="nm">杭州</div><div class="tr"><div class="fi" style="width:48.8%"></div></div><div class="vv">40 <em>4,333 元</em></div></div>
+      <div class="bar"><div class="nm">上海</div><div class="tr"><div class="fi" style="width:34.1%"></div></div><div class="vv">28 <em>1,596 元</em></div></div>
+      <div class="bar"><div class="nm">北京</div><div class="tr"><div class="fi" style="width:30.5%"></div></div><div class="vv">25 <em>3,072 元</em></div></div>
+      <div class="bar"><div class="nm">常熟</div><div class="tr"><div class="fi" style="width:19.5%"></div></div><div class="vv">16 <em>未留存</em></div></div>
+    </div>
+    <div class="src"><b>口径</b>：下方五条只统计「有城市标签的 194 笔」，按其中最大值 82 笔（其他城市）等比缩放，<b>不与上方 641 笔同轴</b>——两者差 7.8 倍，同轴会把城市全部压成细线。「其他城市」＝ 194−40−28−25−16−1−2 ＝ 82 笔（派生），金额 ＝ 20,800−4,333−1,596−3,072−2,598−798 ＝ 8,403 元（派生）；常熟 16 笔金额报告未留存，填「未留存」不填估值。上海金额 ＝ 28×57 派生，泉州金额 ＝ 2×399 派生（泉州 2 笔，条形过窄未单列，见下表）。</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="k">明细</span>城市特征与穿透<span class="r">点击任意行展开</span></h3>
+    <table>
+      <thead><tr><th>城市</th><th class="n">笔数</th><th class="n">金额（元）</th><th class="n">笔均（元）</th><th class="n">较全样本</th><th>特征判断</th></tr></thead>
+      <tbody id="cityBody">
+        <tr class="drill" data-k="hz">
+          <td>杭州</td><td class="n">40</td><td class="n">4,333</td><td class="n">108.3</td><td class="n">0.85×</td>
+          <td><span class="tag t-blue">出差/线下</span></td>
+        </tr>
+        <tr class="drillbox" data-b="hz"><td colspan="6"><div class="dbin">
+          <div class="row"><span>笔均</span><span>4,333 ÷ 40 ＝ <b>108.3 元</b>，接近全样本 127.31 元，属正常消费强度</span></div>
+          <div class="row"><span>金额地位</span><span>单城市金额最高（4,333 元），占「有城市」金额 20.8%（4,333÷20,800，派生）</span></div>
+          <div class="row"><span>判断</span><span>百元级消费为主，符合出差/线下消费画像，<b>无异常笔均信号</b></span></div>
+          <div class="chain">下钻：城市 → 逐笔明细 → 商户类型 → 原始凭证</div>
+        </div></td></tr>
+
+        <tr class="drill" data-k="sh">
+          <td>上海</td><td class="n">28</td><td class="n">1,596</td><td class="n">57.0</td><td class="n">0.45×</td>
+          <td><span class="tag t-org">高频小额</span></td>
+        </tr>
+        <tr class="drillbox" data-b="sh"><td colspan="6"><div class="dbin">
+          <div class="row"><span>笔均</span><span>实验报告给定笔均 57 元；金额 ＝ 28×57 ＝ <b>1,596 元</b>（派生）</span></div>
+          <div class="row"><span>异常信号</span><span>笔数为第 2 高（28 笔），但金额仅 1,596 元，<b>笔均显著低于全样本</b>——典型的高频小额画像</span></div>
+          <div class="row"><span>审计含义</span><span>此类分布常见于日常消费/拆分支付，<b>单笔不构成重要性，需按「频次×金额」组合判断</b>，不宜按单笔金额抽样</span></div>
+          <div class="chain">下钻：城市 → 单笔金额序列 → 支付方式 → 是否拆分交易</div>
+        </div></td></tr>
+
+        <tr class="drill" data-k="bj">
+          <td>北京</td><td class="n">25</td><td class="n">3,072</td><td class="n">122.9</td><td class="n">0.97×</td>
+          <td><span class="tag t-blue">出差/线下</span></td>
+        </tr>
+        <tr class="drillbox" data-b="bj"><td colspan="6"><div class="dbin">
+          <div class="row"><span>笔均</span><span>3,072 ÷ 25 ＝ <b>122.9 元</b>，与全样本 127.31 元几乎持平</span></div>
+          <div class="row"><span>金额地位</span><span>金额第 2 高（3,072 元），笔数第 3（25 笔）</span></div>
+          <div class="row"><span>判断</span><span>笔均与全样本一致，<b>结构最"正常"的城市</b>，可作为其他城市的对照基准</span></div>
+          <div class="chain">下钻：城市 → 逐笔明细 → 商户类型 → 原始凭证</div>
+        </div></td></tr>
+
+        <tr class="drill" data-k="cs">
+          <td>常熟</td><td class="n">16</td><td class="n"><span class="tag t-gray">未留存</span></td><td class="n">—</td><td class="n">—</td>
+          <td><span class="tag t-gray">信息不足</span></td>
+        </tr>
+        <tr class="drillbox" data-b="cs"><td colspan="6"><div class="dbin">
+          <div class="row"><span>已知</span><span>实验报告仅记录「常熟 16 笔」，<b>未留存金额合计</b></span></div>
+          <div class="row"><span>处理</span><span>不推算、不插补。看板在此处<b>保持空值并标注「未留存」</b>，避免用均值估算伪造精度</span></div>
+          <div class="row"><span>补齐方式</span><span>回到原始流水表按「地址」列筛选常熟，重跑 <b>SUM(金额)</b> 即可补齐</span></div>
+          <div class="chain">下钻：城市 → 原始流水表 → SUM(交易金额) → 补录看板</div>
+        </div></td></tr>
+
+        <tr class="drill" data-k="zb">
+          <td>淄博</td><td class="n">1</td><td class="n">2,598</td><td class="n">2,598</td><td class="n"><b style="color:#C0392B">20.4×</b></td>
+          <td><span class="tag t-red">单笔大额</span></td>
+        </tr>
+        <tr class="drillbox" data-b="zb"><td colspan="6"><div class="dbin">
+          <div class="row"><span>笔均</span><span>1 笔 2,598 元，笔均即 2,598 元，为全样本笔均（127.31）的 <b>20.4 倍</b></span></div>
+          <div class="row"><span>为什么是异常点</span><span>总额仅占「有城市」金额 12.5%（2,598÷20,800，派生），<b>按总额排序根本排不进前列</b>；靠笔均偏离才暴露</span></div>
+          <div class="row"><span>审计动作</span><span>单笔大额零散分布 → 列入<b>实质性程序抽查清单</b>，核对商户、合同与审批</span></div>
+          <div class="chain">下钻：城市 → 单笔凭证 → 商户与合同 → 审批链</div>
+        </div></td></tr>
+
+        <tr class="drill" data-k="qz">
+          <td>泉州</td><td class="n">2</td><td class="n">798</td><td class="n">399</td><td class="n">3.1×</td>
+          <td><span class="tag t-org">笔均偏高</span></td>
+        </tr>
+        <tr class="drillbox" data-b="qz"><td colspan="6"><div class="dbin">
+          <div class="row"><span>笔均</span><span>实验报告给定笔均 399 元；金额 ＝ 2×399 ＝ <b>798 元</b>（派生）；为全样本 3.13 倍</span></div>
+          <div class="row"><span>分级</span><span>命中「单城市笔均偏离」<b>黄色阈值（≥3×）</b>，未达红色（≥10×）</span></div>
+          <div class="row"><span>判断</span><span>样本量仅 2 笔，<b>笔均不具统计稳定性</b>，作为线索保留而不作结论</span></div>
+          <div class="chain">下钻：城市 → 2 笔明细 → 商户 → 是否与淄博同商户</div>
+        </div></td></tr>
+      </tbody>
+    </table>
+    <div class="src"><b>全样本笔均</b> ＝ 106,300 ÷ 835 ＝ 127.31 元（派生）。「较全样本」＝ 该城市笔均 ÷ 127.31。<b>注意</b>：常熟未留金额、泉州仅 2 笔，二者的笔均稳定性弱，看板不据此下结论。</div>
+  </div>
+
+  <div class="src"><b>溯源</b>：城市笔数与金额取自本人第 3 次课内实验报告「关联不同表，分析不同城市的交易特征」一节；「其他城市」与各笔均由算式派生，常熟金额为报告未留存字段，如实标注。</div>
+</section>
+
+<!-- ================= 页 3 ================= -->
+<section class="page" id="p3">
+
+  <div class="grid2">
+    <div class="card" style="margin-bottom:0">
+      <h3><span class="k">校验</span>两种口径的交叉验证</h3>
+      <div style="display:flex;align-items:flex-end;gap:22px;margin:6px 0 10px">
+        <div>
+          <div style="font-size:11.5px;color:var(--gray)">地址列直接取城市</div>
+          <div style="font-size:27px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums">193 <span style="font-size:13px">行</span></div>
+        </div>
+        <div style="color:#B9C6D8;font-size:20px;padding-bottom:4px">≈</div>
+        <div>
+          <div style="font-size:11.5px;color:var(--gray)">JOIN 还原城市</div>
+          <div style="font-size:27px;font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums">194 <span style="font-size:13px">行</span></div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <span class="tag t-green" style="font-size:12px;padding:4px 10px">一致率 99.48%</span>
+          <div style="font-size:11px;color:var(--gray);margin-top:5px">193 ÷ 194（派生）</div>
+        </div>
+      </div>
+      <div class="note" style="background:var(--greenbg);border-color:#BFE3CF;color:#14563A">
+        <b>差 1 行不是缺陷，是必须记录的边界。</b>两法互相印证说明城市归属可靠；但若只跑一次查询就下结论，这 1 行的差异会被当成"审计发现"，实际是口径差。
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0">
+      <h3><span class="k">质量</span>三项数据缺陷</h3>
+      <div class="bars wl">
+        <div class="bar rd"><div class="nm">金额缺地理标签</div><div class="tr"><div class="fi" style="width:100%"></div></div><div class="vv">80.43%</div></div>
+        <div class="bar rd"><div class="nm">支付方式未标注</div><div class="tr"><div class="fi" style="width:48.1%"></div></div><div class="vv">38.7%</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:9px;font-size:12.5px;color:#3B4A61">
+        <span class="tag t-org">过程性</span>
+        <span>城市金额未留存 <b>16 笔</b>（常熟），不计入上方两项占比</span>
+      </div>
+      <div class="src">上方两项为<b>字段缺失率</b>（同一坐标：各占 100%），第三项为<b>分析过程性缺失</b>（常熟 16 笔未记录金额合计），单位与分母都不同，因此不画进同一张条形图，也不合并成一个“数据质量分”。</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <h3><span class="k">程序</span>信贷侧审查链路<span class="r">方法与输出可追溯；各步命中数未留存，不填数</span></h3>
+    <div class="steps">
+      <div class="step"><span class="sn">S1</span><div class="st">总体分析</div><div class="sd">按产品类型汇总，定位主体敞口</div></div>
+      <div class="step"><span class="sn">S2</span><div class="st">大额客户 Top50</div><div class="sd">分别按贷款余额、不良余额排序</div></div>
+      <div class="step"><span class="sn">S3</span><div class="st">一人多贷</div><div class="sd">笔数 Top50 ∩ 余额 Top50</div></div>
+      <div class="step"><span class="sn">S4</span><div class="st">断供筛查</div><div class="sd">半年内 / 一年内两层</div></div>
+      <div class="step"><span class="sn">S5</span><div class="st">汽车贷短期断供</div><div class="sd">6 个月内断供，输出四字段</div></div>
+    </div>
+    <table>
+      <thead><tr><th style="width:52px">步骤</th><th>审查目的</th><th>关键条件</th><th>输出字段</th><th style="width:104px">结果留存</th></tr></thead>
+      <tbody>
+        <tr><td><b>S1</b></td><td>确定重点产品与敞口结构</td><td>按产品类型 GROUP BY</td><td>产品、笔数、余额</td><td><span class="tag t-gray">仅结论</span></td></tr>
+        <tr><td><b>S2</b></td><td>锁定单户大额风险</td><td>ORDER BY 贷款余额 / 不良余额 DESC，取前 50</td><td>客户、余额、不良余额</td><td><span class="tag t-gray">未留存明细</span></td></tr>
+        <tr><td><b>S3</b></td><td>识别"笔数与余额双高"主体</td><td>笔数 Top50 INTERSECT 余额 Top50</td><td>客户、笔数、余额</td><td><span class="tag t-gray">未留存明细</span></td></tr>
+        <tr><td><b>S4</b></td><td>量化断供风险敞口</td><td>住房贷款；距今 6 个月 / 12 个月内有断供</td><td>客户、产品、断供时间</td><td><span class="tag t-gray">未留存明细</span></td></tr>
+        <tr><td><b>S5</b></td><td>定位汽车贷短期断供客户</td><td>个人汽车消费贷款；6 个月内断供</td><td>姓名、月均还款额、贷款总额、贷款余额</td><td><span class="tag t-gray">未留存明细</span></td></tr>
+      </tbody>
+    </table>
+    <div class="src"><b>为什么这一页没有数字</b>：实验报告只留存了方法与字段，没有保留各步命中的客户数与笔数。<b>填空比留白更危险</b>——编一个"命中 37 户"会让整页失去可核验性。因此看板把这一页做成「程序 + 条件 + 字段」的可复核清单，命中数一栏统一写「未留存」，并给出补齐路径（回原库重跑对应 SQL）。</div>
+  </div>
+
+  <div class="card">
+    <h3><span class="k">边界</span>这份看板不能证明什么</h3>
+    <div class="note">
+      <b>· 不能证明总体风险水平。</b>样本为单客户流水 835 笔，不是全行抽样，结论只在该客户范围内成立。<br>
+      <b>· 不能替代实质性程序。</b>看板做的是分层与异常定位，任何结论仍需回到凭证与合同。<br>
+      <b>· 不能用于对外披露。</b>数据为课内练习库，已脱敏，仅作方法演示。<br>
+      <b>· 阈值是分析口径不是监管标准。</b>红橙黄阈值为本人设定，用于统一分级口径，非任何监管规定。
+    </div>
+  </div>
+
+  <div class="src"><b>溯源</b>：审查链路 S1–S5 取自本人第 3 次课内实验报告「信贷侧分析」一节；交叉验证 193 / 194 行取自该报告「个人补充说明」中的口径复核记录。<b>本页不含任何推算或估计值。</b></div>
+</section>
+
+</div>
+
+<div class="pager">
+  <div class="in">
+    <button class="pbtn" id="prev">← 上一页</button>
+    <div class="dots" id="dots"><i class="on" data-i="0"></i><i data-i="1"></i><i data-i="2"></i></div>
+    <span class="pgh" id="pgh">1 / 3</span>
+    <span class="kbd"><b>←</b><b>→</b> 翻页</span>
+    <button class="pbtn" id="next">下一页 →</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var TABS=['p1','p2','p3'], cur=0;
+  var tabs=document.querySelectorAll('.tab'), pages=document.querySelectorAll('.page');
+  var dots=document.querySelectorAll('#dots i');
+  var pgh=document.getElementById('pgh');
+
+  function go(i){
+    if(i<0||i>=TABS.length) return;
+    cur=i;
+    for(var k=0;k<tabs.length;k++){
+      tabs[k].classList.toggle('on',k===i);
+      pages[k].classList.toggle('on',k===i);
+      dots[k].classList.toggle('on',k===i);
+    }
+    pgh.textContent=(i+1)+' / '+TABS.length;
+    document.getElementById('prev').disabled=(i===0);
+    document.getElementById('next').disabled=(i===TABS.length-1);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  for(var i=0;i<tabs.length;i++){
+    (function(n){ tabs[n].addEventListener('click',function(){ go(n); }); })(i);
+  }
+  for(var j=0;j<dots.length;j++){
+    (function(n){ dots[n].addEventListener('click',function(){ go(n); }); })(j);
+  }
+  document.getElementById('prev').addEventListener('click',function(){ go(cur-1); });
+  document.getElementById('next').addEventListener('click',function(){ go(cur+1); });
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'){ go(cur-1); }
+    if(e.key==='ArrowRight'){ go(cur+1); }
+  });
+
+  // 行内下钻（不用弹窗，保证演示时全程可点、每次点击有可见反馈）
+  var body=document.getElementById('cityBody');
+  body.addEventListener('click',function(e){
+    var tr=e.target.closest('tr.drill'); if(!tr) return;
+    var box=body.querySelector('tr.drillbox[data-b="'+tr.getAttribute('data-k')+'"]');
+    if(!box) return;
+    var open=box.classList.toggle('show');
+    tr.classList.toggle('op',open);
+  });
+
+  // 时钟
+  function tick(){
+    var d=new Date();
+    var p=function(n){ return (n<10?'0':'')+n; };
+    document.getElementById('clock').textContent=p(d.getHours())+':'+p(d.getMinutes());
+    document.getElementById('today').textContent=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate());
+  }
+  tick(); setInterval(tick,20000);
+
+  go(0);
+  document.body.setAttribute('data-ready','1');
+})();
+</script>
+</body>
+</html>
