@@ -27,6 +27,22 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg)
 .hclock{flex:0 0 auto;text-align:right;border-left:1px solid rgba(255,255,255,.25);padding-left:20px}
 .hclock .ct{font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px;line-height:1.25}
 .hclock .cd{font-size:12px;color:#E0EAF9;white-space:nowrap}
+.backlink{display:inline-flex;align-items:center;gap:7px;margin-top:10px;font-size:11.5px;font-weight:700;
+  color:#0B2A5B;background:#FFDF9E;border-radius:999px;padding:5px 13px;text-decoration:none;
+  box-shadow:0 2px 0 rgba(0,0,0,.16);transition:transform .16s ease,background .16s ease}
+.backlink:hover{background:#fff;transform:translateX(-3px)}
+.backlink span{font-weight:500;opacity:.78}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.kpi{animation:rise .42s cubic-bezier(.2,.8,.3,1) both}
+.card{animation:rise .42s cubic-bezier(.2,.8,.3,1) both;transition:box-shadow .22s ease,transform .22s ease}
+.card:hover{box-shadow:0 8px 22px rgba(11,42,91,.10);transform:translateY(-1px)}
+.kpi:nth-child(1){animation-delay:.03s}.kpi:nth-child(2){animation-delay:.07s}
+.kpi:nth-child(3){animation-delay:.11s}.kpi:nth-child(4){animation-delay:.15s}
+.card:nth-child(2){animation-delay:.05s}.card:nth-child(3){animation-delay:.1s}
+.card:nth-child(4){animation-delay:.15s}.card:nth-child(5){animation-delay:.2s}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+}
 
 /* ============ 一级页签 ============ */
 .tabbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40;
@@ -208,6 +224,7 @@ tr.drillbox>td{background:#F7FAFE;border-bottom:1px solid var(--line);padding:0}
     <div class="hd">
       <h1>审计数据分析看板 · 商业银行零售信贷与交易流水</h1>
       <div class="sub">数据来源：本人第 3 次课内实验（2026-10-13，脱敏报告）｜样本：单客户流水 <b>835 笔</b>、<b>10.63 万元</b>｜派生值均标注算式，未留存字段不填估值</div>
+      <a class="backlink" data-back href="../index.html">← 回到《审计闯关》<span>闯关考「知不知道」，看板看「会不会做」</span></a>
     </div>
     <div class="hclock">
       <div class="ct" id="clock">--:--</div>
@@ -576,6 +593,14 @@ tr.drillbox>td{background:#F7FAFE;border-bottom:1px solid var(--line);padding:0}
 
   go(0);
   document.body.setAttribute('data-ready','1');
+})();
+</script>
+<script>
+(function(){
+  var to = (location.protocol==="file:") ? "../index.html" : ("./index.html"+location.search);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-back]"),function(a){
+    a.setAttribute("href",to);
+  });
 })();
 </script>
 </body>
